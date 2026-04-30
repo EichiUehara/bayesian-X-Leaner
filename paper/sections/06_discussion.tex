@@ -19,7 +19,7 @@ Basis sensitivity
     & User supplies $\tx$ form; wrong basis $\to$ $\PEHE$ degradation
     & \S\ref{sec:experiments:tail_signal} \\
 Compute
-    & 5--20 s per fit (MCMC); not millisecond-latency territory
+    & 5--20\,s per fit (MCMC); not millisecond-latency territory
     & All benchmarks \\
 Treatment type
     & Binary $W \in \{0, 1\}$; continuous dose unvalidated
@@ -253,7 +253,7 @@ Welsch $c$ & 1.34 & 0.5 if you also set severity="severe" \\
 $\eta$-calibration mode & trace-formula \eqref{eq:eta_tr} & functional-specific \eqref{eq:eta_a} for a single contrast; RBCI for hard-coverage \\
 $K$ (cross-fit folds) & 2 & no benefit from larger $K$ in our experiments \\
 \texttt{use\_overlap} & False & True if min $\hat\pi \le 0.05$ or max $\hat\pi \ge 0.95$ \\
-Modular Bayes & off (single cross-fit) & on, with $M = 8$, when dispersion ratio $\rho > 0.15$ \\
+Modular Bayes & off (single-cross-fit) & on, with $M = 8$, when dispersion ratio $\rho > 0.15$ \\
 NUTS warmup / samples / chains & 400 / 800 / 2 & longer if $p \ge 50$ \\
 $\beta$-prior scale $\sigma_\beta$ & 10.0 & 2.0 if $p \ge 10$ to avoid flat-region inefficiency \\
 Student-$t$ prior $\nu$ & 3 & --- \\

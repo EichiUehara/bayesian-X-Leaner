@@ -222,17 +222,23 @@ def fig3_huber_curves():
     ax_d.set_ylim(0, 3.2)
     ax_d.grid(True, alpha=0.25)
 
-    ax_a.plot(d_for_are, are_grid, "-", color="steelblue", linewidth=1.5)
+    ax_a.plot(d_for_are, are_grid, "-", color="steelblue", linewidth=1.5,
+              label="ARE($\\delta$) under $\\mathcal{N}(0,1)$")
+    # Plot the three presets with a single combined legend entry in the
+    # empty lower-right corner of the plot — avoids the per-point
+    # annotations overlapping the y=1.0 dashed line / each other.
     for label, eps, dval in presets:
-        ax_a.plot(dval, _huber_are(dval), "ro", markersize=6)
-        ax_a.annotate(f"δ={dval}\nARE={_huber_are(dval):.3f}", (dval, _huber_are(dval)),
-                      textcoords="offset points", xytext=(8, -18), fontsize=7.5)
-    ax_a.axhline(1.0, color="gray", linestyle="--", linewidth=0.8)
+        are_val = _huber_are(dval)
+        ax_a.plot(dval, are_val, "ro", markersize=6,
+                  label=f"$\\delta$={dval:g}, ARE={are_val:.3f}")
+    ax_a.axhline(1.0, color="gray", linestyle="--", linewidth=0.8,
+                 label="ARE=1 (Gaussian MLE)")
     ax_a.set_xlabel(r"Huber tuning $\delta$")
     ax_a.set_ylabel(r"ARE under $\mathcal{N}(0,1)$")
     ax_a.set_title("(b) asymptotic relative efficiency")
     ax_a.set_ylim(0.5, 1.05)
     ax_a.grid(True, alpha=0.25)
+    ax_a.legend(loc="lower right", fontsize=7, frameon=True, framealpha=0.9)
 
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig3_huber_curves.pdf")
