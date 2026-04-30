@@ -68,34 +68,44 @@ def _dr_pseudo(X, Y, W):
 
 def run_item1_influence_plot():
     """Plot ψ_W(r) and ψ_t(r) along with the empirical residual
-    distribution at three contamination levels."""
-    fig, axes = plt.subplots(1, 3, figsize=(7, 4), sharey=False)
+    distribution at three contamination levels.
+
+    Layout: 1×3 panels with sharey, short panel titles, and a single
+    figure-level legend at the top (avoids per-panel legend clutter
+    and per-panel y-axis label duplication).
+    """
+    fig, axes = plt.subplots(1, 3, figsize=(8, 3.4), sharey=True)
     densities = [0.00, 0.05, 0.20]
     r_grid = np.linspace(-50, 50, 1000)
     c = 1.34; sigma = 1.0; nu = 3.0
     psi_W = r_grid * np.exp(-(r_grid / c) ** 2)
     psi_t = (nu + 1) * r_grid / (nu * sigma ** 2 + r_grid ** 2)
-    for ax, density in zip(axes, densities):
+    for i, (ax, density) in enumerate(zip(axes, densities)):
         n_w = int(round(density * N))
         X, Y, W, _ = whale_dgp(N=N, n_whales=n_w, seed=0)
         D = _dr_pseudo(X, Y, W)
         med_D = np.median(D)
         residuals = D - med_D
-        # Plot residual histogram on twin axis (rescaled)
         ax2 = ax.twinx()
         ax2.hist(np.clip(residuals, -50, 50), bins=80, alpha=0.25, color="grey")
         ax2.set_yticks([])
-        ax.plot(r_grid, psi_W, label=r"$\psi_W$ (Welsch, $c=1.34$)", lw=1.8)
-        ax.plot(r_grid, psi_t, label=r"$\psi_t$ (Student-$t$, $\nu=3$)",
-                lw=1.8, ls="--")
+        ax.plot(r_grid, psi_W, color="steelblue", lw=1.5,
+                label=r"$\psi_W$ (Welsch, $c=1.34$)")
+        ax.plot(r_grid, psi_t, color="darkorange", lw=1.5, ls="--",
+                label=r"$\psi_t$ (Student-$t$, $\nu=3$)")
         ax.axhline(0, color="k", lw=0.5)
         ax.set_xlim(-50, 50)
         ax.set_ylim(-2.0, 2.0)
-        ax.set_xlabel("residual $r$")
-        ax.set_ylabel("$\\psi(r)$")
-        ax.set_title(f"contamination density = {density:.0%}")
-        ax.legend(loc="upper right", fontsize=8)
-    plt.tight_layout()
+        ax.set_xlabel(r"residual $r$")
+        if i == 0:
+            ax.set_ylabel(r"$\psi(r)$")
+        ax.set_title(f"{density:.0%} contamination")
+        ax.grid(True, alpha=0.25)
+
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center",
+               bbox_to_anchor=(0.5, 1.02), ncol=2, fontsize=8, frameon=True)
+    plt.tight_layout(rect=[0, 0, 1, 0.93])
     plt.savefig(FIG_DIR / "fig6_influence_functions.pdf", bbox_inches="tight")
     plt.close()
     print("  wrote fig6_influence_functions.pdf")
