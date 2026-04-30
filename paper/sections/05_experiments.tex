@@ -958,7 +958,7 @@ The canonical heavy-tail uplift baseline is the zero-inflated
 lognormal (ZILN) model. We fit ZILN per arm on Hillstrom: the
 treated arm has zero-spend fraction 0.988 vs control 0.994; the
 non-zero-spend lognormal parameters give expected spend
-$\hat E[Y \mid W=1] = 1.39$ vs $\hat E[Y \mid W=0] = 0.65$, hence
+$\hat{\mathbb{E}}[Y \mid W=1] = 1.39$ vs $\hat{\mathbb{E}}[Y \mid W=0] = 0.65$, hence
 ZILN ATE $= +0.74$ --- \emph{essentially the naive
 difference-of-means estimate ($+0.77$)}. ZILN parameterises the
 heavy tail but does not downweight whales: its ATE inherits the
@@ -972,7 +972,7 @@ A Hill plot of Hillstrom's positive-spend distribution (Figure~\ref{fig:hillstro
 quantifies the tail. Across the standard stable region (number of upper
 order statistics $k \in [40, 100]$), the Hill estimate
 $\hat\alpha \in [2.0, 2.5]$ --- right at the finite-variance threshold
-($\alpha = 2$ corresponds to $E[Y^2]$ on the verge of divergence). At
+($\alpha = 2$ corresponds to $\mathbb{E}[Y^2]$ on the verge of divergence). At
 $k > 100$ the estimate drops to $\sim 1.4$, indicating an even heavier
 deep tail. This justifies the need for bounded-influence robust
 methods on this data and explains why the naive difference-of-means
