@@ -1,9 +1,11 @@
 \documentclass{article}
-% arXiv preprint: visible authors, no "Under review" header. For TMLR
-% submission switch to \usepackage{tmlr} (anonymous default).
-\usepackage[preprint]{tmlr}
-% For TMLR camera-ready: \usepackage[accepted]{tmlr}
-% For explicitly anonymous TMLR submission: \usepackage[anon]{tmlr}
+% TMLR double-blind submission: anonymous authors, "Under review as
+% submission to TMLR" running header. The \author{...} block below is
+% ignored by tmlr.sty in this mode (replaced by "Anonymous authors").
+%
+% For the arXiv preprint version with visible authors, build main.tex
+% (which uses \usepackage[preprint]{tmlr}).
+\usepackage{tmlr}
 
 \usepackage{booktabs}
 \usepackage{amsmath, amssymb}
@@ -21,10 +23,8 @@
 \title{Bayesian X-Learner: Calibrated Posterior Inference for \\
   Heterogeneous Treatment Effects under Heavy-Tailed Outcomes}
 
-\author{%
-  \name Eichi Uehara \email eichi.uehara@aflo.one \\
-  \addr Independent researcher
-}
+% Author block is suppressed by tmlr.sty in default (anonymous) mode.
+\author{Anonymous}
 
 \begin{document}
 \maketitle

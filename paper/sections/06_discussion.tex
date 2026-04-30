@@ -11,13 +11,13 @@ Boundary & Limit & Source \\
 \midrule
 Contamination ceiling
     & 20--25\% whale density; nothing robust works at $\geq$50\%
-    & App.~\ref{app:whale} \\
+    & Appendix~\ref{app:whale} \\
 Clean-data efficiency of robust nuisance
     & Huber($\delta=0.5$) costs 3$\times$ $\PEHE$ on IHDP
-    & Sec.~\ref{sec:experiments:ihdp} \\
+    & \S\ref{sec:experiments:ihdp} \\
 Basis sensitivity
     & User supplies $\tx$ form; wrong basis $\to$ $\PEHE$ degradation
-    & Sec.~\ref{sec:experiments:tail_signal} \\
+    & \S\ref{sec:experiments:tail_signal} \\
 Compute
     & 5--20 s per fit (MCMC); not millisecond-latency territory
     & All benchmarks \\
@@ -26,7 +26,7 @@ Treatment type
     & Architectural \\
 Sample size
     & Verified $200 \leq N \leq 5000$; very-large-$N$ extrapolated
-    & App.~\ref{app:scaling} \\
+    & Appendix~\ref{app:scaling} \\
 \bottomrule
 \end{tabular}
 \caption{Six boundaries of the library's empirically-validated
@@ -66,7 +66,7 @@ mildly miscalibrated for this scale. We recommend MAD
 pre-standardisation as a default safety step on extreme-scale data;
 where the bias of either side matters operationally, the
 data-driven $(\delta, c)$ selector of
-§\ref{sec:experiments:other_paradigms} can be used for finer
+\S\ref{sec:experiments:other_paradigms} can be used for finer
 tuning.
 
 \subsection{When to use this library --- and when not}
@@ -129,7 +129,7 @@ performance, not a conclusive superiority claim; the narrative of
 $\PEHE \approx 0.56$ being a floor claim for the Bayesian machinery
 should be read in that light. Second, the
 clean-data efficiency cost analysed in
-Section~\ref{sec:experiments:efficiency} is not closable by relaxing
+\S\ref{sec:experiments:efficiency} is not closable by relaxing
 $\delta$: \texttt{contamination\_severity="none"} is the only
 configuration that avoids it on IHDP, and switching loss types
 is the only way to close the remaining gap. We see this as a
@@ -166,17 +166,17 @@ BART/BCF compute (minutes per replication).
 \textbf{(b) BCF implementation parity.} Our BCF in
 Table~\ref{tab:ihdp} is implemented in \texttt{pymc\_bart} with the
 Hahn 2020 structural decomposition but does not fully replicate the
-original tau-prior; SBCF \citep{caron2022shrinkage} and
+original tau-prior; SBCF~\citep{caron2022shrinkage} and
 \texttt{stochtree}'s warm-start variants are not run. A reference
 R-implementation of BCF would likely outperform our pymc-based BCF.
 \textbf{(c) Hillstrom lacks ground-truth $\tau$.} Hillstrom is real
 heavy-tailed outcome data, but per-unit treatment effects are
 unobserved; we can only validate the marginal ATE there
 (triangulated by placebo/symmetry checks in
-Section~\ref{sec:experiments:hillstrom}).
+\S\ref{sec:experiments:hillstrom}).
 \textbf{(d) Auto-severity breaks at high contamination.} The Hill-
 estimator-based severity selector
-(Section~\ref{sec:experiments:auto_severity}) routes light/moderate
+(\S\ref{sec:experiments:auto_severity}) routes light/moderate
 contamination correctly but fails at 20\% whale density because the
 non-robust pre-fit it relies on is itself contaminated; a robust
 pre-fit pipeline would close the gap and is flagged as future work.
@@ -191,20 +191,20 @@ specified basis, the cross-fitting product-rate condition of
 $\psi_W$. What remains open is a finite-sample, non-asymptotic
 contraction rate (e.g., a PAC-Bayes-style result that quantifies
 how (A1)--(A4) violations degrade coverage), and a corresponding
-result for the modular-Bayes posterior of Section~\ref{sec:experiments:nuisance_bootstrap} that propagates nuisance
-uncertainty. The estimand-focused tuning of \citet{alexopoulos2025rbci} gives
+result for the modular-Bayes posterior of \S\ref{sec:experiments:nuisance_bootstrap} that propagates nuisance
+uncertainty. The estimand-focused tuning of~\citet{alexopoulos2025rbci} gives
 one concrete avenue: choose $(\eta, c)$ to optimise a proper
 interval score for $\tau$ rather than the loss-likelihood-bootstrap
-variance match we use in §\ref{sec:experiments:learning_rate}.
+variance match we use in \S\ref{sec:experiments:learning_rate}.
 Moreover, the ridge stabilisation of $\widehat{I}$ in the
 $\eta$-estimation procedure introduces a controlled bias whose
 magnitude depends on the ridge level $\lambda$ and the dimension $p$.
 We report sensitivity to $\lambda \in \{0, 10^{-3}, 10^{-2}\}$
-in Section~\ref{sec:experiments:coverage} and find that
+in \S\ref{sec:experiments:coverage} and find that
 coverage is stable across $\lambda$ at $p \le 6$ but sensitive
 at $p \ge 21$, where constrained eigenvalue projections (spectral
 matching) or estimand-specific $\eta^\star(a)$
-(Eq.~\ref{eq:eta_a}) should replace the trace formula.
+(\eqref{eq:eta_a}) should replace the trace formula.
 \textbf{(f) Single semi-synthetic benchmark.} IHDP is the only
 semi-synthetic CATE benchmark we report at scale. The ACIC 2016 /
 2018 series and the Twins dataset
@@ -232,7 +232,7 @@ contaminated-normal-residual T-BART variant in
 The mixture likelihood combined with BART's tree-splitting did not
 sample successfully in our implementation (every replication
 returned NaN). The Student-$t$ T-BART variant
-(Section~\ref{sec:experiments:ihdp}, $0.683 \pm 0.23$) succeeds and
+(\S\ref{sec:experiments:ihdp}, $0.683 \pm 0.23$) succeeds and
 is reported in Table~\ref{tab:ihdp}; an M-estimation-in-splitting
 BART would require modifying the BART splitting rule, which
 \texttt{pymc\_bart} does not expose.
@@ -262,7 +262,7 @@ Student-$t$ prior $\nu$ & 3 & --- \\
 \end{tabular}
 \caption{Default configuration and adjustment guidance. Contamination
 severity is the single most consequential knob; the dispersion-ratio
-diagnostic of Section~\ref{sec:experiments:coverage} tells the user
+diagnostic of \S\ref{sec:experiments:coverage} tells the user
 when modular pooling is needed.}
 \label{tab:defaults}
 \end{table}
@@ -270,7 +270,7 @@ when modular pooling is needed.}
 \subsection{Configuration decision tree}
 \label{sec:discussion:flowchart}
 A linearised decision walk-through for users (referencing the
-defaults table of §\ref{sec:discussion:defaults}):
+defaults table of \S\ref{sec:discussion:defaults}):
 
 \begin{enumerate}[1.,leftmargin=*,itemsep=2pt]
 \item \textbf{Inspect the outcome distribution.} If the empirical
@@ -287,7 +287,7 @@ knowledge indicates whales / rare large events.
 intercept. For tail-as-signal, use a tail indicator
 $[1, \mathbf{1}(|x_j|>c)]$ at the suspected threshold $c$, or a
 spike-and-slab over candidate thresholds when $c$ is unknown
-(§\ref{sec:experiments:basis_ablation}).
+(\S\ref{sec:experiments:basis_ablation}).
 \item \textbf{Run the posterior.} If the dispersion ratio
 $\rho > 0.15$ or you require nominal coverage, enable
 \texttt{modular\_bayes=True} with $M = 8$. Otherwise default
@@ -311,11 +311,11 @@ integrated with the Welsch bulk --- would promote the
 tails-as-signal use case from ``supported via basis'' to
 ``supported via likelihood,'' with Hill estimation used for prior
 elicitation rather than data rescaling. Preliminary results
-(Section~\ref{sec:experiments:hetero_evt_phase3}) show the concept
+(\S\ref{sec:experiments:hetero_evt_phase3}) show the concept
 is viable but requires careful identifiability analysis. Second,
 continuous treatments require a re-derivation of the Phase 2 DR
 target and are scoped out of the current library; integration with
-continuous-treatment DR-learners \citep{kennedy2020optimal} is a
+continuous-treatment DR-learners~\citep{kennedy2020optimal} is a
 natural extension. Third, adaptive basis construction (e.g., via a
 Gaussian-process prior over $\tx$) would relax the user's
 responsibility to specify the functional form, at a compute cost
@@ -324,15 +324,15 @@ Fourth, a data-driven $\delta$ (and $c$) selector --- e.g., via
 predictive interval scores or robust scale diagnostics --- would
 replace the current fixed presets with an adaptive mechanism.
 The tail-index-based auto-severity selector of
-Section~\ref{sec:experiments:auto_severity} is a first step, but
-its failure at high contamination (§\ref{sec:experiments:auto_severity})
+\S\ref{sec:experiments:auto_severity} is a first step, but
+its failure at high contamination (\S\ref{sec:experiments:auto_severity})
 motivates a robust-pre-fit variant that uses a preliminary
 Huber-fitted S-learner before tail estimation.
 Fifth, a proper generalised-Bayes
 calibration analysis of the Welsch pseudo-likelihood
-\citep{bissiri2016general, lyddon2019general}, possibly with a
+\citep{bissiri2016general,lyddon2019general}, possibly with a
 decision-theoretic $\omega$-selector in the style of
 \citet{alexopoulos2025rbci}, would replace the empirical
-calibration argument of Section~\ref{sec:method:phase3} with a
+calibration argument of \S\ref{sec:method:phase3} with a
 formal one and enable joint optimisation of $(\eta, c)$ for
 the causal estimand of interest.

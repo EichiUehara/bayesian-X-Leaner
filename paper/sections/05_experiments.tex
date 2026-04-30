@@ -18,7 +18,7 @@ this paper) has $\tau(X) = 2$ for bulk units and $\tau(X) = 10$ for
 units with $|X_0| > 1.96$; approximately 5\% tail mass; clean
 Gaussian noise on $Y_0$. Baselines include S-/T-/X-learner variants
 with \texttt{HistGradientBoostingRegressor} base learners,
-\texttt{CausalForestDML} from EconML \citep{battocchi2019econml},
+\texttt{CausalForestDML} from EconML~\citep{battocchi2019econml},
 and our Bayesian X-Learner under various
 \texttt{contamination\_severity} settings. Metrics are
 $\PEHE = \sqrt{\mathbb{E}[(\hat\tau(x) - \tau(x))^2]}$ for
@@ -43,9 +43,9 @@ Estimator & $\PEHE$ & std($\PEHE$) & $\eATE$ \\
 \midrule
 \textbf{Bayesian X-Learner (default, XGB-MSE)}  & \textbf{0.562} & 0.200 & 0.079 \\
 Huber-DR (point, no posterior)                   & 0.575 & 0.153 & 0.037 \\
-Causal BART \citep{hill2011bayesian}$^\dagger$             & 0.597 & 0.239 & 0.140 \\
+Causal BART~\citep{hill2011bayesian}$^\dagger$             & 0.597 & 0.239 & 0.140 \\
 Student-$t$ T-BART$^{\dagger\dagger}$                       & 0.683 & 0.231 & 0.278 \\
-BCF \citep{hahn2020bcf}$^\ddagger$                          & 1.038 & 0.619 & 0.077 \\
+BCF~\citep{hahn2020bcf}$^\ddagger$                          & 1.038 & 0.619 & 0.077 \\
 S-Learner                                        & 0.720 & 0.363 & 0.091 \\
 Bayesian X-Learner (robust + overlap weights)    & 0.761 & 0.193 & 0.047 \\
 T-Learner                                        & 0.788 & 0.049 & 0.040 \\
@@ -64,11 +64,11 @@ pseudo-outcomes) is within noise but produces only a point estimate;
 Causal BART is competitive in the mean but markedly more variable
 across replications. Huber-nuisance RX variants are included to
 make the clean-data efficiency cost visible
-(Section~\ref{sec:experiments:efficiency}).
+(\S\ref{sec:experiments:efficiency}).
 $^\dagger$T-BART (\texttt{pymc\_bart}, $m = 200$, $1000+1000$ draws,
 2 chains), the original Causal BART of
 \citet{hill2011bayesian}.
-$^\ddagger$BCF \citep{hahn2020bcf}: $\mu(x, \hat\pi)$ BART ($m=200$)
+$^\ddagger$BCF~\citep{hahn2020bcf}: $\mu(x, \hat\pi)$ BART ($m=200$)
 + $\tau(x)$ BART ($m=50$), 1000 total draws, our
 \texttt{pymc\_bart} implementation. Hahn et al.'s original tau
 hyperprior is not natively replicable in pymc\_bart; results may
@@ -100,7 +100,7 @@ The Huber-DR comparison ($0.575 \pm 0.15$ at 5 reps) deserves
 attention: its point-estimate PEHE is within noise of ours. The
 MCMC posterior is the real deliverable, not the point estimate;
 the contamination experiment of
-Section~\ref{sec:experiments:coverage} provides the empirical
+\S\ref{sec:experiments:coverage} provides the empirical
 justification for the MCMC overhead. Where the methods genuinely
 separate is contamination, not clean-data IHDP: under heavy-tailed
 outcomes the Welsch posterior remains calibrated; Gaussian-likelihood
@@ -219,7 +219,7 @@ contamination-reduction operator applied to signal.}
 Three findings, two positive and one negative. \textbf{(i) A
 tail-aware basis is the correct tool for tails-as-signal}
 (extended basis-sensitivity analysis in
-Section~\ref{sec:experiments:basis_ablation}). With
+\S\ref{sec:experiments:basis_ablation}). With
 $\phi(x) = [1, \mathbf{1}(|X_0| > 1.96)]$, the Welsch posterior
 recovers $\hat\tau_{\text{whale}} = 10.27$ (true 10) and
 $\hat\tau_{\text{bulk}} = 2.07$ (true 2) with 100\% coverage on both
@@ -246,7 +246,7 @@ likelihood.
 \subsection{Basis-sensitivity ablation}
 \label{sec:experiments:basis_ablation}
 The contrast between intercept and tail-aware bases in
-Section~\ref{sec:experiments:tail_signal} is binary; a reviewer may
+\S\ref{sec:experiments:tail_signal} is binary; a reviewer may
 ask what happens under \emph{graded} misspecification. We sweep six
 bases on the same DGP, holding the Welsch likelihood fixed:
 
@@ -293,7 +293,7 @@ an overcomplete spline basis with ridge shrinkage. While it partially
 mitigates the error (whale subgroup error drops to $4.40$ vs $7.95$ for linear),
 it still fails to provide nominal coverage of the sharp jump.
 These observations make the basis-sensitivity
-boundary of Section~\ref{sec:discussion} concrete: if the
+boundary of \S\ref{sec:discussion} concrete: if the
 practitioner cannot specify $\phi$ correctly, the posterior cannot
 recover the subgroup effect, and the library's uncertainty
 intervals --- though calibrated for the mis-specified target ---
@@ -304,15 +304,15 @@ Several coverage cells in this section use 3 seeds for compute
 budget reasons. A 3/3 coverage corresponds to a Wilson 95\% CI of
 $[0.44, 1.00]$, and 0/3 to $[0.00, 0.56]$, so 3-seed cells are
 genuinely informative only at the extremes. Headline cells
-(§\ref{sec:experiments:nuisance_bootstrap},
-§\ref{sec:experiments:coverage}) are reported at 30 seeds with
+(\S\ref{sec:experiments:nuisance_bootstrap},
+\S\ref{sec:experiments:coverage}) are reported at 30 seeds with
 Wilson CIs in tables; smaller-seed cells should be read as
 suggestive rather than statistically calibrated point estimates of
 coverage.
 
 \subsection{Coverage under contamination: posterior vs bootstrap}
 \label{sec:experiments:coverage}
-The IHDP comparison (Section~\ref{sec:experiments:ihdp}) shows
+The IHDP comparison (\S\ref{sec:experiments:ihdp}) shows
 Huber-DR's point estimate is within noise of our MCMC method on
 clean data. The defence offered there is that MCMC delivers a
 calibrated posterior whereas Huber-DR delivers only a point
@@ -372,7 +372,7 @@ results give a more conservative read.}
 \end{table}
 
 Three observations. \textbf{(i) The redescending Welsch likelihood
-is doing real work} — Student-$t$, which has heavy-tailed support
+is doing real work} --- Student-$t$, which has heavy-tailed support
 but unbounded influence, is essentially the same as Welsch on clean
 data (width 0.13 vs 0.22) but breaks at 1\% contamination
 (coverage 0.67) and is gone by 5\% (bias 5.8). Welsch's
@@ -384,11 +384,11 @@ scalar ATE inference; the Conformal-DR row should therefore be
 read as a calibrated-by-construction reference point rather than
 as a tuned ATE estimator.}~Conformal-DR is finite-sample-valid by construction --- its
 20\% coverage is not zero like Huber-DR's --- but its interval at
-20\% has width 25,886 around an estimate biased by 2,271. Coverage
+20\% has width $25{,}886$ around an estimate biased by $2{,}271$. Coverage
 in name only. \textbf{(iii) Huber-DR sits between.} Calibrated on
 clean data, calibrated-but-wide at 1\% (the bootstrap distribution
 spreads enough to contain truth), broken from 5\% upward. Across
-all three challenges only RX-Welsch+severity="severe" is operationally
+all three challenges only RX-Welsch+\texttt{severity="severe"} is operationally
 calibrated at the contamination ceiling the library targets.
 
 \paragraph{Functional-specific $\eta^\star(a)$ calibration at 30 seeds.}
@@ -399,11 +399,11 @@ the tail-subgroup average. With $\eta^\star(a)$ calibration:
 
 \begin{itemize}\itemsep0pt
 \item 5\% density / severity=none: ATE coverage 0.90 [Wilson 0.74, 0.97],
-width 7.21 — improvement over the uncalibrated 0.67 [0.49, 0.81].
+width 7.21 --- improvement over the uncalibrated 0.67 [0.49, 0.81].
 \item 20\% density / severity=severe: ATE coverage 0.77 [0.59, 0.88],
-width 0.28 — reaches nominal range.
+width 0.28 --- reaches nominal range.
 \item Subgroup contrast at 20\% severity=severe: 0.00 coverage,
-width 0.51 — $\eta^\star(a)$ does not fix the small-bias / narrow-CI
+width 0.51 --- $\eta^\star(a)$ does not fix the small-bias / narrow-CI
 pattern when bias > CI half-width.
 \end{itemize}
 
@@ -449,7 +449,7 @@ the interval (subgroup $\hat\tau \approx 2.5$, width $\approx 0.4$).
 Unrobustified intervals (\texttt{severity="none"}) cover the
 subgroup only by exploding in width ($\approx 47$ at 20\% density)
 around heavily biased point estimates. Modular-Bayes pooling
-(Section~\ref{sec:experiments:nuisance_bootstrap}) restores nominal
+(\S\ref{sec:experiments:nuisance_bootstrap}) restores nominal
 ATE coverage; subgroup coverage requires functional-specific
 $\eta^\star(a)$ calibration (Proposition~\ref{prop:welsch_calibration}(a)).}
 \label{tab:coverage_30seed}
@@ -483,8 +483,8 @@ the basis happens to align. Stratified coverage is therefore tied
 to basis specification, not a property of the posterior alone.
 
 \paragraph{Overlap isolation: heavy tails vs poor overlap.}
-A 2 $\times$ 2 $\times$ 2 factorial — (good vs poor) overlap, (no
-vs with) whales, \texttt{use\_overlap} on/off — isolates which
+A 2 $\times$ 2 $\times$ 2 factorial --- (good vs poor) overlap, (no
+vs with) whales, \texttt{use\_overlap} on/off --- isolates which
 mechanism each option addresses. With good overlap and no whales,
 \texttt{use\_overlap=False} under-covers (0.10) due to small bias;
 turning overlap weights on restores coverage (1.00) at modest
@@ -493,12 +493,12 @@ help when there is no contamination (1.00 vs 0.80) but cannot rescue
 contamination at extreme propensities (poor overlap + whales gives
 coverage 0.00 either way, with bias up to $-0.94$). Overlap
 weighting is therefore necessary but not sufficient under the
-combination of low overlap and outcome contamination — practitioners
+combination of low overlap and outcome contamination --- practitioners
 in such regimes should expect substantial residual bias.
 
 \paragraph{Eigenvalue projection of $\widehat I$ at higher $p$.}
 The shrinkage-$\eta$ findings of
-§\ref{sec:experiments:learning_rate} are confirmed at $p = 21$ and
+\S\ref{sec:experiments:learning_rate} are confirmed at $p = 21$ and
 break down at $p = 50$: the smallest eigenvalue of $\widehat I$
 becomes negative on average ($-0.029$) and the trace-formula
 $\hat\eta$ accumulates substantial bias ($9.86$) relative to the
@@ -507,14 +507,14 @@ the redescent threshold $|r| > c/\sqrt{2}$ is $\sim 0.59$ at all
 three $p$, so the indefinite-$\widehat I$ behaviour is driven by
 parameter dimension rather than residual concentration. Practical
 recommendation: at $p \ge 50$ rely on the modular-Bayes posterior
-of §\ref{sec:experiments:nuisance_bootstrap} rather than
+of \S\ref{sec:experiments:nuisance_bootstrap} rather than
 trace-formula $\eta$ for credible-interval calibration.
 
 \paragraph{Modular-Bayes at 30 seeds: nominal coverage replicates.}
 The most consequential follow-up to the under-coverage findings of
 Table~\ref{tab:coverage_30seed} is the 30-seed replication of the
 modular-Bayes pooling experiment of
-§\ref{sec:experiments:nuisance_bootstrap} ($M = 8$ Bayesian-bootstrap
+\S\ref{sec:experiments:nuisance_bootstrap} ($M = 8$ Bayesian-bootstrap
 nuisance draws, single concatenated posterior).
 
 \begin{table}[!t]
@@ -649,7 +649,7 @@ across all $(p, \mathrm{seed})$ cells. We recommend $\lambda =
 
 \paragraph{RBCI-style $\omega$-tuning by interval-score minimisation.}
 An alternative to our trace-formula $\eta$ is the RBCI/decision-
-theoretic $\omega$-selector \citep{alexopoulos2025rbci}: pick $\omega$ to minimise
+theoretic $\omega$-selector~\citep{alexopoulos2025rbci}: pick $\omega$ to minimise
 the Winkler interval score on a bootstrap pseudo-truth distribution.
 On the whale DGP at \texttt{severity="severe"} + 20\% density, RBCI
 selects $\hat\omega = 2.0$ across 3 seeds, yielding intervals of
@@ -676,7 +676,7 @@ truth; under whale contamination, the bias is much larger
 ($-1940$ at 20\%). This is a useful negative result: tests of the
 sharp null do not directly inform calibration of CIs around a
 biased point estimator, so this baseline does not address the
-calibration problem the rest of §\ref{sec:experiments:coverage}
+calibration problem the rest of \S\ref{sec:experiments:coverage}
 focuses on.
 
 \paragraph{Cross-fit dispersion diagnostic for modular pooling.}
@@ -702,7 +702,7 @@ density & severity & dispersion ratio $\rho$ (mean over 5 seeds) \\
 \bottomrule
 \end{tabular}
 \caption{Cross-fit dispersion ratio $\rho$. \texttt{severity="severe"}
-holds $\rho \le 0.12$ across all densities — single-cross-fit
+holds $\rho \le 0.12$ across all densities --- single-cross-fit
 posteriors are stable. \texttt{severity="none"} at 5\% density
 spikes to $\rho = 0.27$, indicating cross-fit variability the
 posterior does not capture. We recommend turning on modular-Bayes
@@ -716,7 +716,7 @@ coverage is already close to nominal.}
 \paragraph{Frequentist-robust DR baselines fail under contamination.}
 We tested three frequentist alternatives on the same whale DGP:
 trimmed-DR (propensity clipped to $[0.05, 0.95]$),
-overlap-weighted DR \citep{li2018balancing}, and an R-learner
+overlap-weighted DR~\citep{li2018balancing}, and an R-learner
 \citep{nie2021quasi} with Huber outer regression. All three are
 \emph{calibrated on clean data} (coverage 1.00 for trimmed-DR and
 R-learner-Huber at 0\% density) and all three \emph{collapse
@@ -749,10 +749,10 @@ boundary-induced instability. Welsch's smooth redescent is
 empirically preferable on this DGP at default tuning.
 
 \paragraph{Catoni-DR baseline.}
-Catoni's M-estimator of the mean \citep{catoni2012challenging}
+Catoni's M-estimator of the mean~\citep{catoni2012challenging}
 applied to DR pseudo-outcomes with bootstrap-100 CI: bias $-0.4$
 clean, $-10$ at 5\%, $-1{,}317$ at 20\%. Same failure mode as
-Huber-DR — a robust mean estimator on contaminated pseudo-outcomes
+Huber-DR --- a robust mean estimator on contaminated pseudo-outcomes
 cannot rescue contaminated nuisance fits. Confirms the
 \S\ref{sec:experiments:other_paradigms} thesis: bounded-influence
 must act at the right pipeline layer.
@@ -768,7 +768,7 @@ straightforward sparse-linear DR baseline rather than a faithful
 reproduction of any one denoised-IPW estimator from the literature.
 
 \paragraph{$\alpha$-stable contamination.}
-$Y_0$ noise from a Lévy $\alpha$-stable distribution at
+$Y_0$ noise from a L\'evy $\alpha$-stable distribution at
 $\alpha \in \{1.7, 1.9, 2.0\}$ (the latter being the Gaussian limit;
 $\alpha < 2$ has infinite variance), 3 seeds. Under
 \texttt{severity="severe"}: bias $-0.05$ to $-0.02$, coverage $1.00$,
@@ -783,7 +783,7 @@ MAD: $\hat\delta = 0.5$ on every seed at 20\% density (correct);
 $\hat\delta \in \{1, 1.345, 2\}$ on clean and 5\%-contaminated data.
 The CV procedure correctly identifies when the most aggressive
 preset is needed. This is operationally a useful alternative to
-the Hill-estimator auto-severity (§\ref{sec:experiments:auto_severity})
+the Hill-estimator auto-severity (\S\ref{sec:experiments:auto_severity})
 which fails at high contamination.
 
 \paragraph{$\beta$-divergence power-posterior baseline.}
@@ -814,7 +814,7 @@ A natural alternative to ``Huber nuisance + Welsch Phase-3'' is to
 use the same $\gamma$-divergence-weighted IRLS in \emph{both} the
 nuisance regression and the imputed-effect regression. This
 configuration succeeds: bias $-0.02, -0.03, -0.04$ across densities
-$\{0\%, 5\%, 20\%\}$ — comparable to RX-Welsch+severity=severe.
+$\{0\%, 5\%, 20\%\}$ --- comparable to RX-Welsch+severity=severe.
 Robustifying both stages is therefore a viable alternative recipe
 within paradigm (i); our contribution remains the calibrated
 \emph{posterior} object, not the only way to robustify Phase-1 and
@@ -874,14 +874,14 @@ at 20\% density to $+72$. The upper-quantile estimand is dominated
 by the contamination tail itself; it answers a different question
 (``what is the 75\textsuperscript{th}-percentile pseudo-outcome'')
 that under whale contamination is no longer a robust ATE proxy.
-Confirms the §\ref{sec:related:tails} taxonomy: shifting the
+Confirms the \S\ref{sec:related:tails} taxonomy: shifting the
 estimand is sensible when the tail \emph{is} the question; when the
 contamination is nuisance, paradigm-(iii) does not help.
 
 \subsection{Real heavy-tailed data: Hillstrom RCT}
 \label{sec:experiments:hillstrom}
 The whale DGP is synthetic. To exercise the method on real
-heavy-tailed outcome data we use the Hillstrom \citep{hillstrom2008}
+heavy-tailed outcome data we use the Hillstrom~\citep{hillstrom2008}
 email-marketing RCT: $N = 42{,}613$ customers (No-Email control vs
 Mens-Email treatment), 2-week spend as outcome. The outcome is
 extreme: the 99th-percentile of spend is \$0 --- only the top $\sim$1\%
@@ -925,13 +925,13 @@ benchmark with known ground-truth $\tau$ remains future work
 
 \paragraph{Lalonde NSW: a second real-data RCT.}
 For external triangulation we additionally fit on Lalonde's NSW
-employment-training RCT \citep{lalonde1986evaluating}: $N = 445$
+employment-training RCT~\citep{lalonde1986evaluating}: $N = 445$
 units, treatment is job training, outcome is 1978 earnings
 (heavy-tailed, max $\approx \$60{,}000$, median $\$0$). Without
 pre-standardising $Y$, severity=none gives ATE $-\$0.6$ and
-severity=severe gives $+\$15.96$ — both well below the canonical
+severity=severe gives $+\$15.96$ --- both well below the canonical
 Lalonde-NSW estimate of $\sim \$1{,}700$. The reason is the
-$\delta$-mapping issue we flagged in §\ref{sec:method:phase1}:
+$\delta$-mapping issue we flagged in \S\ref{sec:method:phase1}:
 Huber's minimax $\delta$ values assume \emph{standardised}
 residuals; Lalonde's earnings are on the dollar scale, so
 $\delta = 0.5$ aggressively suppresses everything. With MAD
@@ -951,12 +951,12 @@ lognormal (ZILN) model. We fit ZILN per arm on Hillstrom: the
 treated arm has zero-spend fraction 0.988 vs control 0.994; the
 non-zero-spend lognormal parameters give expected spend
 $\hat E[Y \mid W=1] = 1.39$ vs $\hat E[Y \mid W=0] = 0.65$, hence
-ZILN ATE $= +0.74$ — \emph{essentially the naive
+ZILN ATE $= +0.74$ --- \emph{essentially the naive
 difference-of-means estimate ($+0.77$)}. ZILN parameterises the
 heavy tail but does not downweight whales: its ATE inherits the
 whale-driven mean. RX-Welsch's $\hat\tau \approx 0$ remains the
 robust answer; the comparison reinforces that capturing the tail
-distribution does not by itself give robustness — the estimator
+distribution does not by itself give robustness --- the estimator
 must also have bounded influence.
 
 \paragraph{Hillstrom tail-heaviness via Hill plot.}
@@ -1012,10 +1012,10 @@ a statistically distinguishable lift in this dataset. This is
 further sanity that the original signal is real but specific.
 
 \paragraph{Propensity-stratified placebo (Hillstrom).}
-Beyond the marginal random-W placebo (§\ref{sec:experiments:hillstrom}),
+Beyond the marginal random-W placebo (\S\ref{sec:experiments:hillstrom}),
 we also permute $W$ \emph{within} pre-treatment-spend-propensity
 quintiles (proxied by historical spend). Stratified-permuted ATE:
-$-0.0038$, CI $[-0.029, +0.020]$ — essentially identical to the
+$-0.0038$, CI $[-0.029, +0.020]$ --- essentially identical to the
 original $-0.0026$, $[-0.029, +0.020]$. The propensity-stratified
 placebo confirms that the near-zero ATE finding is not an artefact
 of marginal-W randomisation, but holds under the more demanding
@@ -1039,7 +1039,7 @@ We report the in-sample posterior below for completeness, but
 emphasise that it should be read as descriptive, not confirmatory.
 (An earlier version of this paper reported a $+0.190$ holdout
 estimate, which was an artefact of fitting on the full data and
-then averaging the per-unit posterior over each half — with a
+then averaging the per-unit posterior over each half --- with a
 parametric basis, that procedure produces train and holdout
 estimates that are identical by construction. The
 true train-only fit reported here is the honest version.)
@@ -1049,7 +1049,7 @@ Two sanity checks triangulate the near-zero-ATE finding. (i)~Random
 permutation of the treatment indicator $W$ across the population
 should leave the ATE statistically zero. With three random
 permutations under \texttt{severity="severe"} we observe ATE
-$\in \{-0.0001, +0.0000, +0.0001\}$ — consistent with no
+$\in \{-0.0001, +0.0000, +0.0001\}$ --- consistent with no
 pipeline bias. (ii)~Treatment-symmetry: replacing $W$ by $1 - W$
 gives ATE $= -0.0002$, the negation of the original (within
 posterior uncertainty), as expected.
@@ -1093,7 +1093,7 @@ $t_2$-noise (heavy-tailed errors)  & 1.43 & 0.97 & 0.40 & 1.00 \\
 $N = 1000$, 5 seeds. Tail-aware basis, \texttt{severity=severe}.
 \textbf{Bulk coverage is at or near nominal across every variant.}
 The whale subgroup retains the small-bias / narrow-CI pattern
-documented in §\ref{sec:experiments:whale}: 40\% subgroup coverage
+documented in \S\ref{sec:experiments:whale}: 40\% subgroup coverage
 on clean data, recovering toward 60\% under contamination as
 intervals widen. Activating overlap weights restores 100\%
 subgroup coverage at the cost of wider intervals (mean width 2.20
@@ -1153,7 +1153,7 @@ $1.54$); $\hat\tau_{\text{whale}} \in \{3.5, 6.8, 2.5\}$. Compared
 to the round-5 ridge spline (mean PEHE $1.46$, similar
 $\hat\tau_{\text{whale}}$ spread), horseshoe shrinkage does
 \emph{not} substantially improve the basis-misspecification problem
-on a step function. The conclusion of §\ref{sec:experiments:basis_ablation}
+on a step function. The conclusion of \S\ref{sec:experiments:basis_ablation}
 stands: when the truth is step-shaped, neither ridge nor horseshoe
 shrinkage on a smooth basis can recover the discontinuity; an
 indicator at the correct (or BMA over candidate) threshold
@@ -1181,23 +1181,23 @@ thresholds is grid-search optimisation: sweep candidate thresholds
 $c \in \{0.5, 0.75, \dots, 3.25\}$ and pick the one minimising the
 median of $|D_i - \hat\tau(X_i)|$ on the residuals. On 3 seeds of
 the tail-heterogeneous DGP, the selected $\hat c$ is $\{1.50, 1.25,
-2.00\}$ versus the true 1.96 — recovering the threshold within
+2.00\}$ versus the true 1.96 --- recovering the threshold within
 $\sim 0.4$. Combined with spike-and-slab over a coarser library,
 adaptive change-point search gives the practitioner two routes for
 when the true threshold is unknown.
 
 \paragraph{Spike-and-slab over candidate thresholds.}
 A principled alternative to the BMA-softmax basis selection of
-§\ref{sec:experiments:basis_ablation} is a Bayesian variable-selection
+\S\ref{sec:experiments:basis_ablation} is a Bayesian variable-selection
 prior over candidate cutpoints. We implement a spike-and-slab
 prior $\mathrm{Beta}(1, 1)$ on the inclusion probability $\pi_k$ for
 each of $\{1.0, 1.5, 1.96, 2.5, 3.0\}$ and a normal slab on the
 coefficient. On three seeds the posterior identifies $c = 1.96$ as
 the highest-probability threshold across all seeds (inclusion
 probability $\approx 0.71$ vs prior $0.5$); the inferred coefficient
-is $\approx 12$ (true difference: 8 — slightly inflated due to mild
+is $\approx 12$ (true difference: 8 --- slightly inflated due to mild
 shrinkage of bulk effect). This is a stronger adaptive-basis result
-than the BMA softmax (§\ref{sec:experiments:basis_ablation},
+than the BMA softmax (\S\ref{sec:experiments:basis_ablation},
 weight 0.58) and gives a principled posterior over the threshold
 choice. A full causal pipeline integrating spike-and-slab into the
 Welsch posterior (rather than the simpler Gaussian regression we
@@ -1229,7 +1229,7 @@ contamination, extreme propensity skew combined with outliers requires both
 overlap weights and robust estimators to maintain partial calibration.
 
 \paragraph{BMA at varying sample size.}
-The basis-BMA result of §\ref{sec:experiments:basis_ablation} uses
+The basis-BMA result of \S\ref{sec:experiments:basis_ablation} uses
 $N = 1000$. We re-run at $N \in \{500, 1000, 2000\}$ and find
 the BMA $\PEHE$ does not improve with sample size: $\{0.48, 0.44,
 0.46\}$ across $N$. The weight on the correct threshold $c = 1.96$
@@ -1239,7 +1239,7 @@ softmax over candidate thresholds saturates the correct threshold's
 weight but the BMA still pools wrong-threshold posteriors. A spike-
 and-slab prior on the threshold with proper marginal-likelihood
 computation would likely close this gap and is flagged as future
-work in §\ref{sec:discussion:future}.
+work in \S\ref{sec:discussion:future}.
 
 \paragraph{Continuous heterogeneity.}
 The basis-ablation DGP is a step function (extreme heterogeneity
@@ -1247,20 +1247,20 @@ form). For a smoother truth $\tau(x) = 2 + 3 \sigma(2 x_0)$
 (monotone sigmoid of the leading covariate), the linear basis
 $\phi(x) = [1, x_0]$ recovers it: $\PEHE \in \{0.26, 0.47, 0.30\}$
 across 3 seeds (mean 0.34) and pointwise CATE coverage is
-$\{0.65, 0.81, 0.63\}$ (mean 0.70 — below nominal 0.95 because the
+$\{0.65, 0.81, 0.63\}$ (mean 0.70 --- below nominal 0.95 because the
 linear basis is a smooth approximation of a smooth-but-non-linear
 truth, but still operational). Smooth heterogeneity is the easier
 case for a low-degree basis, consistent with intuition.
 
 \paragraph{Adaptive basis selection.}
-The brittleness exposed in §\ref{sec:experiments:basis_ablation}
+The brittleness exposed in \S\ref{sec:experiments:basis_ablation}
 admits a partial fix via Bayesian model averaging over a small
 library of candidate thresholds $c \in \{1.0, 1.25, 1.5, 1.75,
 1.96, 2.25, 2.5, 3.0\}$, with weights from a softmax of the
 in-sample Welsch fit. On 5 seeds of the tail-heterogeneous DGP,
 BMA delivers $\PEHE = 0.54 \pm 0.11$ --- between the worst
 (intercept-only, 1.81) and best (correct threshold, 0.20) of
-§\ref{sec:experiments:basis_ablation}, with the true threshold
+\S\ref{sec:experiments:basis_ablation}, with the true threshold
 1.96 receiving the highest weight (0.58 average) on every seed.
 A spike-and-slab prior over thresholds with proper marginal
 likelihoods would likely tighten the gap further; this is left to
@@ -1282,7 +1282,7 @@ under-coverage.
 \paragraph{Bounded-influence vs heavy-tailed-but-unbounded likelihoods.}
 A reviewer asks: is the redescending Welsch necessary, or would
 a heavy-tailed but unbounded-influence likelihood (Student-$t$,
-contaminated-normal mixture) suffice? Section~\ref{sec:experiments:coverage}
+contaminated-normal mixture) suffice? \S\ref{sec:experiments:coverage}
 already shows Student-$t$ breaks at 1\% contamination. We
 additionally implemented a 2-component contaminated-normal
 likelihood at Phase 3, $D \sim (1-\epsilon)\mathcal{N}(\tau, \sigma_{\text{in}}^2) +
@@ -1307,7 +1307,7 @@ density & severity & ATE & 95\% CI width \\
 \caption{Contaminated-normal Phase-3 likelihood on the whale DGP.
 Clean data: calibrated point estimate. Under contamination:
 catastrophic failure at both severity levels. The mixture has
-\emph{unbounded} influence — the outlier component still fits whales
+\emph{unbounded} influence --- the outlier component still fits whales
 with finite variance and the posterior is dragged with them. This
 empirically distinguishes bounded-influence (Welsch) from
 heavy-tailed-but-unbounded (Student-$t$, contaminated-normal):
@@ -1393,11 +1393,11 @@ useful; this is left to future work.}
 
 \subsection{Modular-Bayes propagation of nuisance uncertainty}
 \label{sec:experiments:nuisance_bootstrap}
-The construction sketched in §\ref{sec:method:phase3}: $M = 10$
+The construction sketched in \S\ref{sec:method:phase3}: $M = 10$
 Bayesian-bootstrap nuisance draws on the cross-fitted training
 data, Stage-3 NUTS run for each draw, posterior pooled by either
-modular-cut concatenation \citep{plummer2015cuts, jacob2017better}
-or by Rubin's rules \citep{rubin1987multiple} with the
+modular-cut concatenation~\citep{plummer2015cuts,jacob2017better}
+or by Rubin's rules~\citep{rubin1987multiple} with the
 $(1 + 1/M)$ between-imputation correction. We compare both rules
 against the single-cross-fit baseline.
 
@@ -1434,19 +1434,19 @@ the same 5\% cell.}
 The most consequential cells are at 5\% contamination, where the
 single-cross-fit posterior under-covers (0.33 at \texttt{severity="none"},
 0.00 at \texttt{severity="severe"}). Modular pooling recovers 100\%
-coverage at width 0.42 and 0.34 respectively — within $2 \times$ the
+coverage at width 0.42 and 0.34 respectively --- within $2 \times$ the
 single-fit width. Both pooling rules give essentially identical
 results (concat width 0.42 vs Rubin 0.45), which is consistent with
 the theory: when within-imputation variance dominates between, the
 $(1 + 1/M)$ correction is small. Modular Bayes thus addresses the
 ``nuisance uncertainty not propagated'' concern with a principled,
 named inference principle (cut-Bayes per
-\citet{plummer2015cuts, jacob2017better}) at modest compute cost
+\citet{plummer2015cuts,jacob2017better}) at modest compute cost
 ($M \times$ Stage-3 NUTS).
 
 \subsection{Generalised-Bayes learning-rate calibration}
 \label{sec:experiments:learning_rate}
-§\ref{sec:method:phase3} acknowledges the Welsch posterior is a
+\S\ref{sec:method:phase3} acknowledges the Welsch posterior is a
 generalised (Gibbs) posterior, not a strict Bayesian one. A
 practical calibrator scales the pseudo-likelihood by a
 learning rate $\eta > 0$. We implement a Lyddon-Holmes-Walker
@@ -1475,7 +1475,7 @@ calibrated default-severity posterior gives ATE 4.53 within a
 nominally calibrated CI of width 38.7 --- the calibrator cannot
 fix nuisance-level contamination on its own. The
 \texttt{severity="severe"} configuration of
-§\ref{sec:experiments:coverage} (ATE $1.985$, width $0.29$ at the
+\S\ref{sec:experiments:coverage} (ATE $1.985$, width $0.29$ at the
 same density) remains the operational choice; $\eta$-calibration
 is most useful at low contamination where the nuisance fits are
 already clean.}
@@ -1553,7 +1553,7 @@ intervals balloon to widths 35--45 around heavily biased estimates.
 The joint selector matches LLB variance by definition but trades
 sharpness for that match; the fixed
 \texttt{contamination\_severity="severe"} configuration of
-§\ref{sec:experiments:coverage} (width 0.29 at 20\% density)
+\S\ref{sec:experiments:coverage} (width 0.29 at 20\% density)
 remains the practitioner default.
 
 \subsection{Policy-risk under contamination}
@@ -1591,7 +1591,7 @@ directly into calibrated decisions.}
 \end{table}
 
 This is the cleanest decision-quality demonstration: calibrated
-intervals (§\ref{sec:experiments:coverage}) translate into a
+intervals (\S\ref{sec:experiments:coverage}) translate into a
 calibrated treatment rule. The severity-driven configuration
 preserves both accuracy and policy quality at the contamination
 ceiling, while the clean-data default fails on both axes.
@@ -1599,8 +1599,8 @@ ceiling, while the clean-data default fails on both axes.
 \subsection{Other paradigm-(i) and paradigm-(iii) baselines}
 \label{sec:experiments:other_paradigms}
 For completeness we evaluated two additional baselines from
-§\ref{sec:related:tails}.
-The \textbf{$\gamma$-divergence X-learner} \citep[Fujisawa-Eguchi
+\S\ref{sec:related:tails}.
+The \textbf{$\gamma$-divergence X-learner}~\citep[Fujisawa-Eguchi
 2008-style;][]{huber2009robust} replaces stage-2 imputed-effect
 regression with $\gamma$-weighted IRLS ($\gamma = 0.5$, MAD
 rescaled). On clean data it recovers the ATE (bias $-0.04$); under
@@ -1617,7 +1617,7 @@ layer.
 The \textbf{Quantile-DML / OQRF-style} estimator (DML-residualised
 quantile regression of pseudo-outcomes at $q \in \{0.5, 0.75,
 0.95\}$) shows the same instability as the simpler Quantile-DR of
-§\ref{sec:experiments:quantile_dr}: the median estimate at 1\%
+\S\ref{sec:experiments:quantile_dr}: the median estimate at 1\%
 density is $-10.2$, at 20\% is $-1684$. Paradigm-(iii) does not
 naturally tolerate whale-style contamination because the DR
 construction itself is the source of variance, not the choice of

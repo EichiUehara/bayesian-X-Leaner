@@ -9,7 +9,7 @@ full raw CSVs ship with the code release.
 \label{app:convergence}
 Across every DGP we ran (IHDP 5 reps, whale density sweep at 0.1\%
 to 50\%, tail-heterogeneous 5 seeds, plus the ablations of
-Section~\ref{app:ablations}), 100\% of MCMC runs met both of the
+\S\ref{app:ablations}), 100\% of MCMC runs met both of the
 following: $\hat{R} < 1.05$ on all parameters, and minimum
 effective sample size $\mathrm{ESS} > 200$ across 2 chains of 800
 samples. Warmup length (default 400) was sufficient for NUTS
@@ -62,7 +62,7 @@ $\epsilon$ & $\delta^\star$ & ARE under $\mathcal{N}$ & preset \\
 \end{tabular}
 \caption{Huber's minimax-$\delta$ and its asymptotic relative
 efficiency (ARE) at the Gaussian centre of $\mathcal{F}_\epsilon$.
-Values verified against \citet{huber2009robust} Table 4.1.}
+Values verified against~\citet{huber2009robust} Table 4.1.}
 \label{tab:huber_numerics}
 \end{table}
 
@@ -74,7 +74,7 @@ at the \emph{nominal centre} of the contamination model; the IHDP
 experiment shows the observed finite-sample PEHE penalty is
 substantially larger than ARE predicts, which we attribute to
 tree-level amplification mechanisms discussed in
-Section~\ref{sec:experiments:efficiency}.
+\S\ref{sec:experiments:efficiency}.
 
 \subsection{Sample-size scaling}
 \label{app:scaling}
@@ -116,7 +116,7 @@ $c$ & Bias & RMSE & Cov & Width & Bias & RMSE & Cov & Width \\
 \caption{Welsch $c$ sensitivity (8 seeds per cell). The default
 $c = 1.34$ achieves coverage 1.00 on the whale DGP and 0.88 on the
 clean DGP, the latter loss being the small-bias / narrow-CI pattern
-discussed in Section~\ref{sec:experiments:whale}. Aggressive
+discussed in \S\ref{sec:experiments:whale}. Aggressive
 shrinkage ($c \le 1$) buys robust coverage at slightly wider
 intervals; $c \ge 5$ recovers Gaussian behaviour and loses
 calibration under contamination.}
@@ -231,7 +231,7 @@ the default \texttt{severity="none"} configuration, increasing $K$
 worsens performance (bias $+3.4$ at $K=2$ vs $+6.3$ at $K=10$)
 because smaller training folds make whale concentration more
 extreme relative to leaf capacity --- consistent with the prediction
-in \citet{kennedy2020optimal}. The library default $K = 2$ is the
+in~\citet{kennedy2020optimal}. The library default $K = 2$ is the
 correct setting when paired with the
 \texttt{contamination\_severity} mechanism that handles whales at
 the nuisance layer rather than via fold subdivision. Full table in

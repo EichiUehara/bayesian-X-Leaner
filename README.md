@@ -18,10 +18,16 @@ bounded-influence robustness in a single estimator.
 > Heterogeneous Treatment Effects under Heavy-Tailed Outcomes.*
 > Eichi Uehara. arXiv preprint, 2026.
 
-The full LaTeX source is in [paper/](paper/) and the camera-ready
-arXiv bundle in [bayesian_xlearner_arxiv.zip](bayesian_xlearner_arxiv.zip).
+The full LaTeX source is in [paper/](paper/). Two pre-built variants:
+
+- **arXiv preprint (visible authors):** [bayesian_xlearner_arxiv.zip](bayesian_xlearner_arxiv.zip) — `paper/main.tex` with `\usepackage[preprint]{tmlr}`.
+- **TMLR submission (anonymous double-blind):** [bayesian_xlearner_tmlr.pdf](bayesian_xlearner_tmlr.pdf) and [bayesian_xlearner_tmlr_supplementary.zip](bayesian_xlearner_tmlr_supplementary.zip) — `paper/main_tmlr.tex` with `\usepackage{tmlr}` (default = anonymous + line numbers + "Under review" header).
+
 Reproduce all empirical figures with the scripts in
-[benchmarks/](benchmarks/) (see [REPRODUCE.md](REPRODUCE.md)).
+[benchmarks/](benchmarks/) (see [REPRODUCE.md](REPRODUCE.md)). The
+LaTeX linter [paper/check.sh](paper/check.sh) verifies clean compile
+of either variant: `cd paper && ./check.sh` (arXiv) or
+`./check.sh main_tmlr.tex` (TMLR).
 
 ## Architecture
 

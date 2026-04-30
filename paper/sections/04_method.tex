@@ -26,8 +26,8 @@ finite-dimensional, interpretable, and amenable to hypothesis-driven
 downstream queries (integration over $\beta$, inequality probabilities,
 subgroup contrasts). The cost is an explicit modelling assumption on
 $\tau$'s functional form; we discuss basis sensitivity in
-Section~\ref{sec:experiments:tail_signal} and
-Section~\ref{sec:discussion}.
+\S\ref{sec:experiments:tail_signal} and
+\S\ref{sec:discussion}.
 
 \subsection{Phase 1: Cross-fitted nuisance quarantine}
 \label{sec:method:phase1}
@@ -35,27 +35,27 @@ Nuisance estimates $\hat{\mu}_0, \hat{\mu}_1, \hat{\pi}$ are obtained
 via $K$-fold cross-fitting (default $K = 2$) to break the dependence
 between nuisance fits and second-stage residuals that would otherwise
 inflate the posterior's concentration. We support two backends:
-XGBoost \citep{chen2016xgboost} with squared-error loss (default,
+XGBoost~\citep{chen2016xgboost} with squared-error loss (default,
 efficient on truly clean data) and CatBoost with a Huber loss
 parameterised by ($\delta = 1.345$; robust against heavy-tailed outcome
 distributions). The choice is exposed via the
 \texttt{contamination\_severity} enum
-(Section~\ref{sec:method:severity}), which maps an assumed
+(\S\ref{sec:method:severity}), which maps an assumed
 contamination rate to Huber's minimax-optimal $\delta$
-(Eq.~\ref{eq:huber_minimax}). This is the \emph{outcome-level}
+(\eqref{eq:huber_minimax}). This is the \emph{outcome-level}
 robustness axis of our library: it protects Phase 2 pseudo-outcomes
 from contamination that originates in $Y$ itself, before any
 downstream handling.
 
 \paragraph{Standardisation of $Y$ for nuisance fitting.}
-Huber's minimax-$\delta$ values (Eq.~\ref{eq:huber_minimax}) are
+Huber's minimax-$\delta$ values (\eqref{eq:huber_minimax}) are
 derived under \emph{standardised} residuals ($r/\sigma$) in
 location models. CatBoost's Huber loss parameter $\delta$ operates
 on the raw outcome scale, so the $\delta$--$\epsilon$ mapping loses
 its theoretical meaning when $Y$ is not unit-scale. This mismatch
 likely contributes to the clean-data efficiency gap on IHDP
-(Section~\ref{sec:experiments:efficiency}) and the Lalonde-NSW
-underperformance (Section~\ref{sec:experiments:hillstrom}): on
+(\S\ref{sec:experiments:efficiency}) and the Lalonde-NSW
+underperformance (\S\ref{sec:experiments:hillstrom}): on
 dollar-scale earnings, $\delta = 0.5$ aggressively suppresses
 everything. The library exposes an optional pre-standardisation step
 \texttt{normalize\_y\_for\_nuisance}: $Y \mapsto Y /
@@ -65,11 +65,11 @@ applied to the standardised scale, then mapping back. We do
 (the IHDP and whale DGPs have unit-scale outcomes), but recommend
 it for extreme-scale outcome data. A sensitivity analysis of
 standardised vs raw-scale $\delta$ is reported in
-Section~\ref{sec:experiments:efficiency}.
+\S\ref{sec:experiments:efficiency}.
 
 \subsection{Phase 2: Doubly robust pseudo-outcomes}
 \label{sec:method:phase2}
-Following \citet{kennedy2020optimal}, we construct DR
+Following~\citet{kennedy2020optimal}, we construct DR
 pseudo-outcomes on each arm:
 \begin{align}
   D_1^{(i)} &\;=\; \hat{\mu}_1(X_i) - \hat{\mu}_0(X_i) +
@@ -83,10 +83,10 @@ These targets satisfy $\mathbb{E}[D_w \mid X = x] = \tau(x)$ under
 consistent $\hat{\mu}_w$ or consistent $\hat{\pi}$ (the doubly
 robust property), and are the Phase-3 regression targets. For
 low-overlap regimes the library additionally supports overlap
-weights \citep{li2018balancing}, which bound the effective
+weights~\citep{li2018balancing}, which bound the effective
 propensity-inverse weight at the cost of targeting a weighted
 rather than uniform CATE estimand; we do not use them in the
-experiments of Section~\ref{sec:experiments} but they are available
+experiments of \S\ref{sec:experiments} but they are available
 via \texttt{use\_overlap=True}.
 
 \subsection{Phase 3: Bayesian update with Welsch pseudo-likelihood}
@@ -113,11 +113,11 @@ $\widehat{\mathrm{MAD}}(D)/0.6745$ when
 \texttt{mad\_rescale=True}). The pseudo-log-density $-\sum_i
 \rho_W(r_i; c)$, $r_i = D_i - \phi(X_i)^\top \beta$, replaces the
 Gaussian likelihood in the posterior via \texttt{numpyro.factor};
-sampling proceeds with NUTS \citep{hoffman2014no}. Because $\psi_W$
+sampling proceeds with NUTS~\citep{hoffman2014no}. Because $\psi_W$
 is bounded and redescends to zero, extreme residuals exert
 diminishing influence on the posterior mean, at the cost of a
 well-characterised efficiency loss on truly Gaussian data
-(Section~\ref{sec:experiments:efficiency}). We use a Student-$t$
+(\S\ref{sec:experiments:efficiency}). We use a Student-$t$
 prior $\beta \sim t_\nu(0, \sigma_\beta^2)$ with $\nu = 3$ by
 default, which pairs with the redescender to preserve robustness on
 the posterior side as well. Sensitivity of the posterior to $c$ on
@@ -135,7 +135,7 @@ works well across the contamination densities we test.
 \paragraph{Sampler diagnostics for the non-convex Welsch posterior.}
 The Welsch $\rho_W$ is non-convex: $\psi_W'(r) = e^{-r^2/c^2}(1 -
 2r^2/c^2) < 0$ for $|r| > c/\sqrt{2}$, which could in principle
-create local curvature issues for NUTS \citep{betancourt2017bfmi}.
+create local curvature issues for NUTS~\citep{betancourt2017bfmi}.
 We systematically assess sampler behaviour beyond the summary
 $\hat{R}$ and ESS statistics of Appendix~\ref{app:convergence}.
 \textbf{(i) Autocorrelation:} across all reported DGPs, the
@@ -144,7 +144,7 @@ the effective-to-total sample ratio exceeds 0.25.
 \textbf{(ii) Energy diagnostics:} we report the Bayesian fraction
 of missing information (BFMI $= \mathrm{Var}[\Delta E] /
 \mathrm{Var}[E]$) for every run; BFMI $> 0.8$ in 100\% of runs
-(well above the $0.3$ threshold of \citep{betancourt2017bfmi}).
+(well above the $0.3$ threshold of~\citep{betancourt2017bfmi}).
 \textbf{(iii) Multi-chain concordance:} split-$\hat{R}$ on four
 chains (post-hoc check on the whale DGP at 20\% density, 5 seeds)
 is $< 1.01$ for every parameter.
@@ -165,12 +165,12 @@ Appendix~\ref{app:mcmc_diagnostics}.
 \paragraph{Calibration of the generalised posterior.}
 Replacing a proper likelihood by a robust pseudo-loss yields a
 \emph{generalised} or \emph{Gibbs posterior}
-\citep{bissiri2016general, grunwald2017inconsistency,
+\citep{bissiri2016general,grunwald2017inconsistency,
 knoblauch2022optimization, lyddon2019general} of the form
 $p_\eta(\beta \mid D) \propto p(\beta) \exp\big(-\eta \sum_i
 \rho_W(D_i - \phi(X_i)^\top \beta; c)\big)$, with learning rate
 $\eta > 0$. The credible-interval calibration of $p_\eta$ is not
-automatic — under misspecification the choice of $\eta$ matters.
+automatic --- under misspecification the choice of $\eta$ matters.
 We give a formal calibration result.
 
 \begin{proposition}[Asymptotic calibration of the Welsch
@@ -252,7 +252,7 @@ for identifiability.
 
 The proof follows from the generalised BvM
 \citep{kleijn2012bernstein} and the matrix identities of
-\citet{holmes2017assigning} and \citet{lyddon2019general}.
+\citet{holmes2017assigning} and~\citet{lyddon2019general}.
 \eqref{eq:eta_a} is the directional analogue of LHW's
 information-matching scale; \eqref{eq:eta_tr} is the trace-based
 average. The Bartlett identity $J = I$ holds when $\rho$ is the
@@ -285,18 +285,18 @@ $\hat\eta^\star(a) = (a^\top \widehat I^{-1} a) /
 (a^\top \widehat I^{-1} \widehat J \widehat I^{-1} a)$.
 
 \paragraph{Sensitivity and alternative calibrations.}
-In low-overlap regimes where IPW pseudo-outcomes are highly volatile, $\widehat I$ and $\widehat J$ can be poorly estimated. Overestimation of $J$ relative to $I$ produces an artificially small $\hat{\eta}$, which over-shrinks the posterior variance and degrades coverage. The scalar $\hat{\eta}$ calibration assumes the misspecification inflates the variance spherically in the transformed space. When covariance distortion is highly anisotropic, an alternative is an affine or ``open-faced sandwich'' calibration \citep{shaby2014openfaced, ribatet2012bayesian}, where the posterior draws $\beta^{(s)}$ are directly affine-transformed such that their empirical covariance matches $\widehat{I}^{-1}\widehat{J}\widehat{I}^{-1}$. While affine calibration matches the sandwich variance exactly in the asymptotic limit, we prefer the scalar $\eta$ scaling for its numerical stability in finite samples; modifying the data distribution (via fractional likelihoods) preserves proper Bayesian conditioning and avoids projecting draws outside the natural parameter space.
+In low-overlap regimes where IPW pseudo-outcomes are highly volatile, $\widehat I$ and $\widehat J$ can be poorly estimated. Overestimation of $J$ relative to $I$ produces an artificially small $\hat{\eta}$, which over-shrinks the posterior variance and degrades coverage. The scalar $\hat{\eta}$ calibration assumes the misspecification inflates the variance spherically in the transformed space. When covariance distortion is highly anisotropic, an alternative is an affine or ``open-faced sandwich'' calibration~\citep{shaby2014openfaced,ribatet2012bayesian}, where the posterior draws $\beta^{(s)}$ are directly affine-transformed such that their empirical covariance matches $\widehat{I}^{-1}\widehat{J}\widehat{I}^{-1}$. While affine calibration matches the sandwich variance exactly in the asymptotic limit, we prefer the scalar $\eta$ scaling for its numerical stability in finite samples; modifying the data distribution (via fractional likelihoods) preserves proper Bayesian conditioning and avoids projecting draws outside the natural parameter space.
 
 \textbf{Default and fallback.} The library default is
 $\eta = 1$, which is the correct value when the Bartlett identity
 holds ($J = I$). We expose
 \texttt{calibrate\_eta=True} to run procedure (i)--(iv); on the
-DGPs of Section~\ref{sec:experiments} the procedure yields
+DGPs of \S\ref{sec:experiments} the procedure yields
 $\hat\eta^\star_\mathrm{tr} \in [0.5, 1.5]$ on clean data and
 inflates modestly under contamination.
-Section~\ref{sec:experiments:learning_rate} reports the LLB-bootstrap
-variant of step (iii) — sampling $B$ Bayesian-bootstrap draws and
-estimating $\widehat J$ from posterior-variance differences — which
+\S\ref{sec:experiments:learning_rate} reports the LLB-bootstrap
+variant of step (iii) --- sampling $B$ Bayesian-bootstrap draws and
+estimating $\widehat J$ from posterior-variance differences --- which
 avoids computing the Hessian explicitly and gives essentially
 identical results at modest extra cost.
 
@@ -306,7 +306,7 @@ condition (A3) (bounded-influence $\psi$) holds for Welsch with
 fixed $c$ and \emph{also} for Student-$t$ at any $\sigma$, since
 $\psi_t(r) = (\nu+1)r/(\nu\sigma^2 + r^2)$ is bounded and
 redescending. The empirical failure of Student-$t$ under
-contamination (§\ref{sec:experiments:coverage}) is therefore
+contamination (\S\ref{sec:experiments:coverage}) is therefore
 \emph{not} a violation of (A3) per se but a difference in
 \emph{redescent rate}: $\psi_t \sim r^{-1}$ for $|r| \to \infty$
 versus $\psi_W \sim r e^{-r^2/c^2}$, decaying super-exponentially.
@@ -314,7 +314,7 @@ With many large residuals (heavy contamination), Student-$t$'s
 slow redescent allows cumulative pull on the posterior even though
 each individual residual is bounded; Welsch's faster redescent
 neutralises this. The fixed-$\sigma$ Student-$t$ experiments of
-§\ref{sec:experiments:coverage} confirm this: even with
+\S\ref{sec:experiments:coverage} confirm this: even with
 $\sigma$ fixed, Student-$t$ shows bias $+28$ at 20\% density
 versus $-0.02$ for Welsch+severity=severe. The Bartlett-identity
 condition $J = \eta^{-1} I$ in the Proposition holds asymptotically
@@ -328,7 +328,7 @@ mixture-of-Gaussians is unbounded in the outlier component).
 single ATE intercept and a subgroup contrast generally require
 different $\eta$. \eqref{eq:eta_tr} is a compromise that calibrates
 on average but may over- or under-cover for individual functionals.
-Section~\ref{sec:experiments:learning_rate} reports the
+\S\ref{sec:experiments:learning_rate} reports the
 loss-likelihood-bootstrap surrogate of \eqref{eq:eta_tr} and finds
 it operationally adequate at the configurations we test; users
 who care about a specific contrast should compute $\eta^\star(a)$
@@ -360,7 +360,7 @@ Proposition~\ref{prop:welsch_calibration} treats the nuisance fits as fixed.
 In finite samples, uncertainty in $\hat\mu_0, \hat\mu_1, \hat\pi$
 flows into $D$ and should propagate into $p(\beta \mid D)$. We
 adopt the \emph{modular} or \emph{cut} Bayesian construction
-\citep{plummer2015cuts, jacob2017better}: information flows from
+\citep{plummer2015cuts,jacob2017better}: information flows from
 the nuisance posterior into the Stage 3 posterior but not back, so
 that DR orthogonalisation is preserved. Operationally, draw
 $M$ nuisance posterior samples $(\hat\mu_0^{(m)}, \hat\mu_1^{(m)},
@@ -370,7 +370,7 @@ $\beta$-posterior draws, and pool either by concatenation
 (modular-cut posterior) or by Rubin's rules
 \citep{rubin1987multiple}: posterior mean = $\overline{\beta}^{(m)}$,
 posterior variance = average within-$m$ variance + $(1 + 1/M) \cdot$
-between-$m$ variance. Section~\ref{sec:experiments:nuisance_bootstrap}
+between-$m$ variance. \S\ref{sec:experiments:nuisance_bootstrap}
 reports calibration with and without this propagation; results
 indicate it is most consequential at moderate contamination,
 where individual cross-fits diverge and a single posterior
@@ -390,7 +390,7 @@ the same observed sample. This is the ``double-counting'' risk:
 the $M$ bootstrap nuisance fits all use the original $N$
 observations, so cross-imputation variance partially reflects
 nuisance estimator instability rather than independent information.
-Empirically (Section~\ref{sec:experiments:nuisance_bootstrap})
+Empirically (\S\ref{sec:experiments:nuisance_bootstrap})
 concatenation and Rubin's rules give within-2\% widths in every
 cell tested, so the choice is operationally minor; we expose both
 and recommend concatenation as the default for its simpler
@@ -419,7 +419,7 @@ Tail-aware \texttt{X\_infer}  & CATE surface       & Tails-as-signal \\
 \bottomrule
 \end{tabular}
 \caption{Three supported heavy-tail mechanisms. See
-Section~\ref{sec:experiments} for empirical evidence; an additional
+\S\ref{sec:experiments} for empirical evidence; an additional
 data-layer path (\texttt{normalize\_extremes}, Hill-estimator based)
 exists in the code but is empirically discouraged and is documented
 in Appendix~\ref{app:evt_path}.}
@@ -432,7 +432,7 @@ pipeline, and both are enabled by default under
 it addresses structural heterogeneity in $\tau$ itself, not
 distributional contamination in $Y$. Mechanism conflation at this
 layer is the most common source of misuse in our experience; the
-empirical probe of Section~\ref{sec:experiments:tail_signal}
+empirical probe of \S\ref{sec:experiments:tail_signal}
 demonstrates why the distinction matters.
 
 \paragraph{Implementation details.}
@@ -464,7 +464,7 @@ become inefficient.
 Rather than ask users to select a Huber $\delta$ directly, the
 library exposes a four-level enum that maps an assumed contamination
 rate $\epsilon$ to its minimax-optimal $\delta$ via
-Eq.~\ref{eq:huber_minimax}:
+\eqref{eq:huber_minimax}:
 
 \begin{table}[!t]
 \centering

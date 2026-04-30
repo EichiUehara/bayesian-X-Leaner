@@ -22,15 +22,15 @@ imputed pseudo-outcomes with \emph{doubly robust} (DR) pseudo-outcomes
 $D_1 = \mu_1 - \mu_0 + (Y - \mu_1)/\pi$ yields a target whose
 second-stage regression consistently estimates $\tx$ under a rate
 condition on the nuisance fits that is weaker than either the T- or
-X-Learner requires separately. The R-Learner of \citet{nie2021quasi}
+X-Learner requires separately. The R-Learner of~\citet{nie2021quasi}
 takes a complementary quasi-oracle route via residualisation.
 \citet{curth2021nonparametric} survey the meta-learner landscape and
 formalise a theory of conditions under which each
-variant is preferred; a follow-up \citep{curth2023search} argues that
+variant is preferred; a follow-up~\citep{curth2023search} argues that
 much of the apparent model-selection variance in the CATE literature
 is benchmark-dependent rather than fundamental. Our method uses the
 DR pseudo-outcome target --- the imputation and debiasing happen in
-Phase 2 of our pipeline (Section~\ref{sec:method}) --- and inherits
+Phase 2 of our pipeline (\S\ref{sec:method}) --- and inherits
 its rate properties.
 What classical meta-learners leave open is uncertainty quantification
 on $\tx$: the standard recipe is bootstrap, which inherits the
@@ -39,8 +39,8 @@ sensitivity of the base learner to outliers.
 \subsection{Bayesian causal inference and MCMC}
 \label{sec:related:bayesian}
 Bayesian causal inference on $\tx$ has been dominated by flexible
-tree-based priors. BART itself \citep{chipman2010bart} provides the
-backbone; Causal BART \citep{hill2011bayesian} adapts it to the
+tree-based priors. BART itself~\citep{chipman2010bart} provides the
+backbone; Causal BART~\citep{hill2011bayesian} adapts it to the
 potential-outcome framework, producing a posterior over the
 counterfactual response surfaces from which $\tx$ is derived. BCF
 \citep{hahn2020bcf} decouples the treatment effect from the
@@ -49,15 +49,15 @@ improvements on heterogeneous response; SBCF
 \citep{caron2022shrinkage} extends BCF with horseshoe-style global-
 local shrinkage on the treatment-effect terms for sparse $\tx$.
 Alternative Bayesian nonparametric formulations include Gaussian
-processes \citep{alaa2018gp} and neural-network architectures with
-uncertainty estimation \citep{shi2019adapting, jesson2021uncertainty}.
-A recent line \citep{zheng2022bayesian} extends Bayesian CATE to
+processes~\citep{alaa2018gp} and neural-network architectures with
+uncertainty estimation~\citep{shi2019adapting,jesson2021uncertainty}.
+A recent line~\citep{zheng2022bayesian} extends Bayesian CATE to
 multi-treatment and partial-identification settings.
 Frequentist semiparametric alternatives --- generalised random
-forests \citep{athey2019generalized}, double/debiased machine
-learning \citep{chernozhukov2018double}, and conformal inference for
+forests~\citep{athey2019generalized}, double/debiased machine
+learning~\citep{chernozhukov2018double}, and conformal inference for
 individual treatment effects
-\citep{lei2021conformal, alaa2023conformal, jin2023sensitivity} ---
+\citep{lei2021conformal,alaa2023conformal, jin2023sensitivity} ---
 deliver calibrated intervals through different routes (asymptotic
 normality, orthogonal scores, finite-sample distribution-free
 guarantees) but produce point-estimate-plus-interval objects rather
@@ -101,7 +101,7 @@ $E[\psi_\delta^2] / E[\psi'_\delta]^2$ and is $\approx 95\%$ at
 $\delta = 1.345$ and $\approx 79\%$ at $\delta = 0.5$. Redescending
 M-estimators push robustness further by letting the influence
 function return smoothly to zero for very large residuals; the
-biweight \citep{beaton1974fitting} and the exponential Welsch form
+biweight~\citep{beaton1974fitting} and the exponential Welsch form
 \citep{dennis1978techniques}, $\psi_W(r) = r \exp(-r^2 / 2c^2)$,
 are the two canonical choices. We adopt Welsch for its smooth
 gradient and use it in the Bayesian likelihood. It gives up a
@@ -122,7 +122,7 @@ a concentration-friendly alternative --- Catoni's mean
 \citep{catoni2012challenging}, median-of-means, or Huber-style
 M-estimators --- while leaving the ATE/CATE estimand unchanged.
 The method becomes insensitive to extreme observations at a
-known efficiency cost on Gaussian data \citep{huber2009robust};
+known efficiency cost on Gaussian data~\citep{huber2009robust};
 recent CATE-targeted variants (robust DR-learners,
 \citet{chernozhukov2018double}-style orthogonalised scores with
 robustified residuals) sit in this paradigm.
@@ -136,7 +136,7 @@ Our \texttt{use\_overlap=True} option implements the former.
 
 \textbf{(iii) Functional replacement} changes the estimand
 itself --- to a quantile, CVaR, or a full conditional
-counterfactual density \citep{kallus2018policy}. The tail is
+counterfactual density~\citep{kallus2018policy}. The tail is
 no longer a nuisance to be suppressed; it is the answer.
 Distributional and quantile treatment effects are the canonical
 form. Coverage of very extreme quantiles is bounded by empirical
@@ -145,7 +145,7 @@ support, where extreme value theory
 
 \textbf{(iv) Distribution-free intervals.} Conformal prediction
 applied to ITEs
-\citep{lei2021conformal, alaa2023conformal, jin2023sensitivity}
+\citep{lei2021conformal,alaa2023conformal, jin2023sensitivity}
 delivers finite-sample-valid prediction intervals without a tail
 model. They cannot extrapolate beyond observed support, and the
 recently developed sensitivity-aware variant of
@@ -163,7 +163,7 @@ estimator while keeping the ATE/CATE target intact --- but adds two
 moves the standard M-estimation toolkit does not. First, it returns
 a \emph{full Bayesian posterior} over $\tx$ rather than a point
 estimate plus sandwich SE; calibration of credible intervals under
-contamination (Section~\ref{sec:experiments:coverage}) is the
+contamination (\S\ref{sec:experiments:coverage}) is the
 empirical justification. Second, it makes the
 \emph{tails-as-contamination vs tails-as-signal} distinction
 operational: the same library handles paradigm-(i) contamination via
@@ -174,7 +174,7 @@ user-supplied basis $\phi(x)$ at the CATE-surface layer.
 Industry pipelines for robust ATE estimation under heavy-tailed
 revenue outcomes have used trimmed and other bounded-influence
 estimators in place of plain difference-of-means or naive DR; for
-example, the Trimmed Match estimator of \citet{chen2022robust}
+example, the Trimmed Match estimator of~\citet{chen2022robust}
 delivers a distribution-free, robust ATE for randomised paired
 geo experiments. These approaches typically terminate at a robust
 point estimate (or a frequentist interval) for the ATE. Our Phase-3
@@ -188,16 +188,16 @@ that a sandwich SE or bootstrap CI cannot provide.
 An alternative approach to heavy-tailed outcomes is to model the
 tail distribution directly. Semiparametric Bayesian methods based
 on Dirichlet-process bulk models with a generalised Pareto (GPD)
-tail component \citep{taddy2010bayesian, beirlant2006statistics}
+tail component~\citep{taddy2010bayesian,beirlant2006statistics}
 deliver calibrated uncertainty for tail functionals (extreme
 quantiles, CVaR) without requiring a contamination model. These sit
 in paradigm (iii): they change the estimand to a tail-aware
 functional rather than robustifying the mean. Our tail-signal basis
-approach (Section~\ref{sec:experiments:tail_signal}) is simpler and
+approach (\S\ref{sec:experiments:tail_signal}) is simpler and
 operates within paradigm (i), but a natural extension is to
 integrate a GPD tail component into the Phase-3 likelihood --- we
 provide preliminary results in
-Section~\ref{sec:experiments:hetero_evt_phase3} and flag a
+\S\ref{sec:experiments:hetero_evt_phase3} and flag a
 thoughtful implementation as future work.
 
 \paragraph{RBCI and decision-theoretic calibration.}
@@ -206,10 +206,10 @@ The estimand-focused generalised-Bayes framework of
 proper interval score (Winkler score) targeted at a specific causal
 estimand, achieving calibration by construction for that functional.
 Our trace-formula $\eta$-calibration
-(Section~\ref{sec:experiments:learning_rate}) targets average
+(\S\ref{sec:experiments:learning_rate}) targets average
 posterior-variance matching instead; a direct empirical comparison
 of $\omega$-tuning vs $\eta$-trace vs $\eta^\star(a)$ on the whale
-DGP is reported in Section~\ref{sec:experiments:coverage}, showing
+DGP is reported in \S\ref{sec:experiments:coverage}, showing
 that RBCI $\omega$-tuning trades sharpness for guaranteed
 calibration while the trace formula prefers tighter intervals at
 slightly sub-nominal coverage.
@@ -233,7 +233,7 @@ assumption on $\tau$'s functional form.
 EVT-style likelihood components (paradigm-(iii)-flavoured) are not
 yet fully integrated; an earlier library path
 \texttt{normalize\_extremes} exposes a Hill estimator at the data
-layer, but Section~\ref{sec:experiments:tail_signal} shows it is
+layer, but \S\ref{sec:experiments:tail_signal} shows it is
 contamination-directed rather than signal-preserving. A proper
 Bayesian EVT likelihood --- generalised-Pareto tail mixture, Hill
 estimator used for prior elicitation --- remains a natural
@@ -241,16 +241,16 @@ extension we flag as future work.
 
 \paragraph{Scope and orthogonal directions.}
 This paper addresses scalar continuous outcomes under cross-sectional
-binary treatment. Functional outcomes \citep{salmaso2026focal} and
+binary treatment. Functional outcomes~\citep{salmaso2026focal} and
 related longitudinal- or auxiliary-data extensions are orthogonal
 directions not pursued here. Recent work on estimand-focused
-generalised-Bayes tuning \citep{alexopoulos2025rbci} is closely related to our
+generalised-Bayes tuning~\citep{alexopoulos2025rbci} is closely related to our
 $\eta$-calibration in
-Section~\ref{sec:experiments:learning_rate}; a detailed comparison
+\S\ref{sec:experiments:learning_rate}; a detailed comparison
 of coverage--width trade-offs between their $\omega$-selector and
 our trace-formula $\eta$ appears in
-Section~\ref{sec:experiments:coverage} and
-§\ref{sec:discussion}.
+\S\ref{sec:experiments:coverage} and
+\S\ref{sec:discussion}.
 
 \paragraph{Amortised vs per-dataset Bayesian CATE.}
 Recent amortised approaches to Bayesian causal inference (e.g.\
