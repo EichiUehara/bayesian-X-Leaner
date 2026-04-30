@@ -80,7 +80,9 @@ but with Student-$t$ residuals ($\nu \sim \mathrm{Gamma}(2,0.1)$).}
 \end{table}
 
 The default Bayesian X-Learner attains $\PEHE = 0.562 \pm 0.20$ on
-5 reps, the lowest mean among all estimators tested. We extended
+5 reps, the lowest mean among all estimators tested
+(distribution per estimator visualised in
+Figure~\ref{fig:ihdp_pehe}, Appendix~\ref{app:figures}). We extended
 the comparison to 10 reps for the cheap baselines (BART/BCF were
 not extended because each rep takes minutes; see
 Appendix~\ref{app:experiments}). Replications 6--10 are markedly
@@ -151,7 +153,8 @@ beyond 30\% (Huber's theoretical limit).}
   \label{fig:whale_density}
 \end{figure}
 
-Two observations. First, the crossover between the clean-data
+Two observations (visualised in Figure~\ref{fig:whale_density}).
+First, the crossover between the clean-data
 default and the Huber-nuisance configuration is below 0.1\%
 whale density: a single contaminated unit in $N = 1000$ is enough
 to move XGB-MSE into the RMSE $\approx 6$ regime. The Welsch
@@ -174,8 +177,10 @@ Appendix~\ref{app:whale}.
 The IHDP $\delta = 1.345$ row in Table~\ref{tab:ihdp}
 ($\PEHE = 1.23$) is substantially better than $\delta = 0.5$
 ($\PEHE = 1.80$), confirming the theoretical direction of Huber's
-efficiency result: a less aggressive redescender pays less
-efficiency cost on clean data. But the gap to XGB-MSE (0.56)
+efficiency result (Figure~\ref{fig:huber_curves} in
+Appendix~\ref{app:figures} plots both the minimax-$\delta(\epsilon)$
+curve and ARE$(\delta)$ at the Gaussian centre): a less aggressive
+redescender pays less efficiency cost on clean data. But the gap to XGB-MSE (0.56)
 remains large, a $2.2 \times$ PEHE penalty rather than the
 $\approx 1.05 \times$ that the 95\% ARE at $\delta = 1.345$ would
 predict in the location-model limit. We hypothesise the excess is structural rather than a tuning miss:
@@ -216,7 +221,10 @@ contamination-reduction operator applied to signal.}
 \label{tab:tail_signal}
 \end{table}
 
-Three findings, two positive and one negative. \textbf{(i) A
+Three findings, two positive and one negative
+(per-cell posterior densities in
+Figure~\ref{fig:tail_posteriors}, Appendix~\ref{app:figures}).
+\textbf{(i) A
 tail-aware basis is the correct tool for tails-as-signal}
 (extended basis-sensitivity analysis in
 \S\ref{sec:experiments:basis_ablation}). With
