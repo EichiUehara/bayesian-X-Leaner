@@ -339,29 +339,29 @@ densities ($N = 1000$, 3 seeds, true ATE $= 2.0$).
 \toprule
 density & estimator & bias & coverage & CI width \\
 \midrule
-0\%   & RX-Welsch (severity=none)      & $+0.02$    & 1.00 & 0.22 \\
-0\%   & RX-Welsch (severity=severe)    & $+0.13$    & 0.00 & 0.22 \\
+0\%   & RX-Welsch (severity="none")      & $+0.02$    & 1.00 & 0.22 \\
+0\%   & RX-Welsch (severity="severe")    & $+0.13$    & 0.00 & 0.22 \\
 0\%   & RX-Gaussian                    & $-0.47$    & 1.00 & 1.46 \\
 0\%   & RX-StudentT                    & $+0.03$    & 1.00 & 0.13 \\
 0\%   & Huber-DR (bootstrap)           & $-0.03$    & 1.00 & 0.15 \\
 0\%   & Conformal-DR (split-CP)        & $-0.07$    & 1.00 & 12.7 \\
 \midrule
-1\%   & RX-Welsch (severity=none)      & $-0.08$    & 1.00 & 0.40 \\
-1\%   & RX-Welsch (severity=severe)    & $+0.13$    & 0.00 & 0.22 \\
+1\%   & RX-Welsch (severity="none")      & $-0.08$    & 1.00 & 0.40 \\
+1\%   & RX-Welsch (severity="severe")    & $+0.13$    & 0.00 & 0.22 \\
 1\%   & RX-Gaussian                    & $-11.0$    & 0.67 & 39.7 \\
 1\%   & RX-StudentT                    & $+0.36$    & 0.67 & 0.64 \\
 1\%   & Huber-DR (bootstrap)           & $-8.2$     & 1.00 & 22.0 \\
 1\%   & Conformal-DR (split-CP)        & $-91.2$    & 1.00 & 2090 \\
 \midrule
-5\%   & RX-Welsch (severity=none)      & $+3.3$     & 0.00 & 1.6 \\
-5\%   & RX-Welsch (severity=severe)    & $+0.13$    & 0.00 & 0.23 \\
+5\%   & RX-Welsch (severity="none")      & $+3.3$     & 0.00 & 1.6 \\
+5\%   & RX-Welsch (severity="severe")    & $+0.13$    & 0.00 & 0.23 \\
 5\%   & RX-Gaussian                    & $-5.7$     & 0.67 & 38.3 \\
 5\%   & RX-StudentT                    & $+5.8$     & 0.00 & 8.9 \\
 5\%   & Huber-DR (bootstrap)           & $-113$     & 0.00 & 181 \\
 5\%   & Conformal-DR (split-CP)        & $-412$     & 1.00 & 12369 \\
 \midrule
-20\%  & RX-Welsch (severity=none)      & $+6.5$     & 1.00 & 32.3 \\
-\textbf{20\%}  & \textbf{RX-Welsch (severity=severe)} & $\mathbf{-0.02}$ & \textbf{1.00} & \textbf{0.29} \\
+20\%  & RX-Welsch (severity="none")      & $+6.5$     & 1.00 & 32.3 \\
+\textbf{20\%}  & \textbf{RX-Welsch (severity="severe")} & $\mathbf{-0.02}$ & \textbf{1.00} & \textbf{0.29} \\
 20\%  & RX-Gaussian                    & $-29.4$    & 0.00 & 39.6 \\
 20\%  & RX-StudentT                    & $+24.8$    & 0.00 & 16.1 \\
 20\%  & Huber-DR (bootstrap)           & $-1762$    & 0.00 & 673 \\
@@ -406,11 +406,11 @@ on the whale DGP at 30 seeds with two contrasts: ATE intercept and
 the tail-subgroup average. With $\eta^\star(a)$ calibration:
 
 \begin{itemize}\itemsep0pt
-\item 5\% density / severity=none: ATE coverage 0.90 [Wilson 0.74, 0.97],
+\item 5\% density / severity="none": ATE coverage 0.90 [Wilson 0.74, 0.97],
 width 7.21 --- improvement over the uncalibrated 0.67 [0.49, 0.81].
-\item 20\% density / severity=severe: ATE coverage 0.77 [0.59, 0.88],
+\item 20\% density / severity="severe": ATE coverage 0.77 [0.59, 0.88],
 width 0.28 --- reaches nominal range.
-\item Subgroup contrast at 20\% severity=severe: 0.00 coverage,
+\item Subgroup contrast at 20\% severity="severe": 0.00 coverage,
 width 0.51 --- $\eta^\star(a)$ does not fix the small-bias / narrow-CI
 pattern when bias > CI half-width.
 \end{itemize}
@@ -540,7 +540,7 @@ density & severity & coverage (30 seeds) & Wilson 95\% CI & width \\
 \end{tabular}
 \caption{30-seed modular-Bayes coverage on the whale DGP. Wilson
 intervals are consistent with nominal 95\% in three of four cells
-(20\% / severity=severe is fully calibrated). The single-cross-fit
+(20\% / severity="severe" is fully calibrated). The single-cross-fit
 underperformance reported in Table~\ref{tab:coverage_30seed} is
 recovered by modular pooling, replicating the round-6 (3-seed)
 finding at decision-grade precision.}
@@ -552,7 +552,7 @@ single-cross-fit posteriors at \texttt{severity="severe"}
 under-cover (0.10 [0.04, 0.26] at 5\% density; 0.83 [0.66, 0.93]
 at 20\%); modular pooling recovers nominal coverage (0.80 [0.63,
 0.90] at 5\%, 1.00 [0.89, 1.00] at 20\%). The remaining 5\%
-severity=severe gap is consistent with the residual small-bias
+severity="severe" gap is consistent with the residual small-bias
 issue Proposition~\ref{prop:welsch_calibration} cannot address by
 $\eta$-rescaling.
 
@@ -586,7 +586,7 @@ but the practical setting infers $\sigma$ from data. We test the
 fixed-$\sigma$ variant directly: $\sigma \in \{1.0, 5.0\}$, 5 seeds
 on the whale DGP. \textbf{Fixing $\sigma$ does not rescue the
 estimator}: bias $+2.6$ at 5\% density, $+28$ at 20\% (vs $+0.13$
-for Welsch+severity=severe). The mechanism is that Student-$t$'s
+for Welsch+severity="severe"). The mechanism is that Student-$t$'s
 $\psi_t(r) = (\nu+1)r/(\nu\sigma^2+r^2)$ does redescend
 asymptotically, but \emph{slowly} (as $1/r$ for large $r$); under
 contamination the cumulative pull from many large residuals
@@ -600,8 +600,8 @@ characterised as the wrong \emph{rate} of bounded influence.
 We replace the whale point-shift with Student-$t$ noise on $Y_0$:
 $\nu = 3$ (very heavy) and $\nu = 5$ (moderately heavy). Five
 seeds, both severities. Coverage is consistent with calibration:
-$\nu = 5$ severity=none gives 1.00 coverage; $\nu = 3$
-severity=severe gives 0.80 [Wilson 0.49, 0.94]; bias is small
+$\nu = 5$ severity="none" gives 1.00 coverage; $\nu = 3$
+severity="severe" gives 0.80 [Wilson 0.49, 0.94]; bias is small
 ($\le 0.14$) across all settings. The pattern matches the Pareto
 result of Table~\ref{tab:contam_normal}'s neighbour: distributional
 heavy tails (no point shifts) are easier than point contamination,
@@ -637,7 +637,7 @@ regime (tens of thousands of units, dozens of basis dimensions).
 
 \paragraph{Compute scaling with basis dimension $p$.}
 Phase-3 NUTS runtime is roughly flat from $p = 1$ to $p = 100$
-($8.7\,$s to $10.9\,$s on the whale DGP, severity=severe), with
+($8.7\,$s to $10.9\,$s on the whale DGP, severity="severe"), with
 $\beta$-prior scale 2.0 for $p \ge 10$. The dominant cost is the
 nuisance fit, not the posterior sampler. Higher-dimensional bases
 ($p > 100$) we did not test; we expect typical NUTS scaling
@@ -733,7 +733,7 @@ to $-130$ at 5\% density, $-1717$ to $-1762$ at 20\%, with CI widths
 in the hundreds. Weight stabilisation and DML-style residualisation
 do not address \emph{outcome} contamination; the bounded-influence
 operator must act at the regression / likelihood layer, which
-RX-Welsch + severity=severe provides.
+RX-Welsch + severity="severe" provides.
 
 \paragraph{Squared-loss generalised Bayes with $\omega$-calibration.}
 A direct test of ``does Welsch's bounded influence add value beyond
@@ -801,7 +801,7 @@ $\beta$-divergence power posterior with $\beta = 0.5$
 (1/\beta)[\exp(\beta \log f_\theta) - 1]$. Empirically on the
 whale DGP, $\beta$-divergence Phase-3 (with default XGB-MSE
 nuisance) gives bias $+4.5$ at 5\% density and $+22$ at 20\% --- much
-worse than Welsch+severity=severe ($\le 0.13$ at both). The
+worse than Welsch+severity="severe" ($\le 0.13$ at both). The
 $\beta$-divergence at $\beta = 0.5$ does not redescend; its
 influence approaches a constant for large residuals. Welsch's
 super-exponential redescent is the operational difference.
@@ -822,7 +822,7 @@ A natural alternative to ``Huber nuisance + Welsch Phase-3'' is to
 use the same $\gamma$-divergence-weighted IRLS in \emph{both} the
 nuisance regression and the imputed-effect regression. This
 configuration succeeds: bias $-0.02, -0.03, -0.04$ across densities
-$\{0\%, 5\%, 20\%\}$ --- comparable to RX-Welsch+severity=severe.
+$\{0\%, 5\%, 20\%\}$ --- comparable to RX-Welsch+severity="severe".
 Robustifying both stages is therefore a viable alternative recipe
 within paradigm (i); our contribution remains the calibrated
 \emph{posterior} object, not the only way to robustify Phase-1 and
@@ -906,8 +906,8 @@ Estimator & ATE estimate & 95\% CI & CI width \\
 \midrule
 Naive (difference of means) & $+0.770$ & $[+0.485, +1.054]$ & 0.57 \\
 Huber-DR (bootstrap CI)     & $+0.020$ & $[+0.007, +0.046]$ & 0.04 \\
-RX-Welsch (severity=none)   & $-0.003$ & $[-0.029, +0.020]$ & 0.05 \\
-\textbf{RX-Welsch (severity=severe)} & $\mathbf{-0.000}$ & $\mathbf{[-0.009, +0.009]}$ & $\mathbf{0.02}$ \\
+RX-Welsch (severity="none")   & $-0.003$ & $[-0.029, +0.020]$ & 0.05 \\
+\textbf{RX-Welsch (severity="severe")} & $\mathbf{-0.000}$ & $\mathbf{[-0.009, +0.009]}$ & $\mathbf{0.02}$ \\
 \bottomrule
 \end{tabular}
 \caption{Hillstrom email-marketing RCT, $N = 42{,}613$. The naive
@@ -936,8 +936,8 @@ For external triangulation we additionally fit on Lalonde's NSW
 employment-training RCT~\citep{lalonde1986evaluating}: $N = 445$
 units, treatment is job training, outcome is 1978 earnings
 (heavy-tailed, max $\approx \$60{,}000$, median $\$0$). Without
-pre-standardising $Y$, severity=none gives ATE $-\$0.6$ and
-severity=severe gives $+\$15.96$ --- both well below the canonical
+pre-standardising $Y$, severity="none" gives ATE $-\$0.6$ and
+severity="severe" gives $+\$15.96$ --- both well below the canonical
 Lalonde-NSW estimate of $\sim \$1{,}700$. The reason is the
 $\delta$-mapping issue we flagged in \S\ref{sec:method:phase1}:
 Huber's minimax $\delta$ values assume \emph{standardised}
@@ -945,9 +945,9 @@ residuals; Lalonde's earnings are on the dollar scale, so
 $\delta = 0.5$ aggressively suppresses everything. With MAD
 pre-standardisation (an option \texttt{normalize\_y\_for\_nuisance}
 on the library, default off; the MAD scale on Lalonde is $\hat{s}
-\approx 5488$), severity=severe gives ATE $= +\$1{,}745$ with 95\%
+\approx 5488$), severity="severe" gives ATE $= +\$1{,}745$ with 95\%
 posterior CI $[-\$1, +\$3{,}177]$, straddling the canonical
-$\sim\$1{,}700$ Lalonde-NSW estimate. severity=none with the same
+$\sim\$1{,}700$ Lalonde-NSW estimate. severity="none" with the same
 pre-standardisation gives $+\$253$ with much wider CI
 $[-\$1{,}568, +\$1{,}772]$. This is a practical but important
 caveat: the severity preset is calibrated for unit-scale outcomes;
@@ -1098,7 +1098,7 @@ $t_2$-noise (heavy-tailed errors)  & 1.43 & 0.97 & 0.40 & 1.00 \\
 \end{tabular}
 \caption{Pointwise CATE coverage on the tail-heterogeneous DGP
 ($\tau_{\text{bulk}} = 2$, $\tau_{\text{tail}} = 10$, threshold 1.96),
-$N = 1000$, 5 seeds. Tail-aware basis, \texttt{severity=severe}.
+$N = 1000$, 5 seeds. Tail-aware basis, \texttt{severity="severe"}.
 \textbf{Bulk coverage is at or near nominal across every variant.}
 The whale subgroup retains the small-bias / narrow-CI pattern
 documented in \S\ref{sec:experiments:whale}: 40\% subgroup coverage
@@ -1116,7 +1116,7 @@ distributional spread.}
 Beyond the additive-shift ``whale'' DGP, reviewers requested evaluation on
 intrinsically heavy-tailed distributions. We evaluated asymmetric Pareto contamination
 under 5\% and 20\% density. The method maintains its robust properties:
-at 20\% Pareto contamination, the \texttt{severity=severe} configuration caps average
+at 20\% Pareto contamination, the \texttt{severity="severe"} configuration caps average
 bias at $\approx 0.13$ and retains valid ATE coverage in most replicates. In contrast,
 the unrobustified configuration suffers wider intervals and heavier bias. The Welsch
 likelihood effectively bounds the influence of extreme Pareto draws without
@@ -1387,8 +1387,8 @@ density & Phase-3 likelihood & bias & coverage \\
 \end{tabular}
 \caption{Two extensions to the Phase-3 likelihood, 3 seeds.
 Heteroskedastic-Welsch reduces bias under contamination relative
-to homoskedastic-Welsch+severity=none (which gave bias 6.5 at 20\%)
-but does not match severity=severe's tight calibrated intervals.
+to homoskedastic-Welsch+severity="none" (which gave bias 6.5 at 20\%)
+but does not match severity="severe"'s tight calibrated intervals.
 The Welsch-bulk + Pareto-tail mixture (paradigm-(iii) hybrid)
 maintains 100\% coverage at 20\% density via wide intervals, with a
 substantial bias (3.07) reflecting that the Pareto tail component

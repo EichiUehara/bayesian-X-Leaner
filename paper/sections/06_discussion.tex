@@ -39,7 +39,7 @@ Reviewers asked if we could provide an automated switch (e.g., via a robust
 tail index) to toggle \texttt{severity} dynamically, avoiding the clean-data
 efficiency cost when tails are light. We implemented and tested an automated
 switch using the Hill estimator on preliminary residuals. While it successfully
-assigned \texttt{severity=none} on clean data and \texttt{severe} under
+assigned \texttt{severity="none"} on clean data and \texttt{severe} under
 5\% contamination, it failed catastrophically at 20\% contamination: dense,
 shifted outliers trick the continuous Pareto-tail estimator into estimating
 a light tail ($\hat{\alpha} \approx 6.0$), causing the pipeline to deactivate
@@ -249,7 +249,7 @@ A consolidated default-configuration table for users:
 Knob & Default & When to change \\
 \midrule
 \texttt{contamination\_severity} & \texttt{"none"} (XGB-MSE) & \texttt{"severe"} if outcome tails are visible (Hill index $\le 2$) or known whales \\
-Welsch $c$ & 1.34 & 0.5 if you also set severity=severe \\
+Welsch $c$ & 1.34 & 0.5 if you also set severity="severe" \\
 $\eta$-calibration mode & trace-formula \eqref{eq:eta_tr} & functional-specific \eqref{eq:eta_a} for a single contrast; RBCI for hard-coverage \\
 $K$ (cross-fit folds) & 2 & no benefit from larger $K$ in our experiments \\
 \texttt{use\_overlap} & False & True if min $\hat\pi \le 0.05$ or max $\hat\pi \ge 0.95$ \\
