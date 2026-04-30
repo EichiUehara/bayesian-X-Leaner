@@ -1,0 +1,6 @@
+estimator,replication,pehe,ate_err,runtime,error
+Contam-Normal T-BART,1,,,4.412570238113403,module 'pymc.math' has no attribute 'log1p'
+Contam-Normal T-BART,2,,,0.037583351135253906,module 'pymc.math' has no attribute 'log1p'
+Contam-Normal T-BART,3,,,0.037778615951538086,module 'pymc.math' has no attribute 'log1p'
+Contam-Normal T-BART,4,,,0.07480096817016602,module 'pymc.math' has no attribute 'log1p'
+Contam-Normal T-BART,5,,,0.03676199913024902,module 'pymc.math' has no attribute 'log1p'

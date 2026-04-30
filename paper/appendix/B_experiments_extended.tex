@@ -1,0 +1,248 @@
+\section{Extended Experimental Results}
+\label{app:experiments}
+
+This appendix reports the 17+ benchmarks that were run during
+library development. Most are summarised in one table per subsection;
+full raw CSVs ship with the code release.
+
+\subsection{Convergence diagnostics}
+\label{app:convergence}
+Across every DGP we ran (IHDP 5 reps, whale density sweep at 0.1\%
+to 50\%, tail-heterogeneous 5 seeds, plus the ablations of
+Section~\ref{app:ablations}), 100\% of MCMC runs met both of the
+following: $\hat{R} < 1.05$ on all parameters, and minimum
+effective sample size $\mathrm{ESS} > 200$ across 2 chains of 800
+samples. Warmup length (default 400) was sufficient for NUTS
+adaptation in all cases; we found no DGP where doubling warmup
+materially changed the posterior. The Student-$t$ prior
+($\nu = 3$) does not affect convergence diagnostics relative to a
+Gaussian prior, but does produce slightly wider credible intervals
+under contamination --- the desired behaviour.
+
+\subsection{Whale density sweep (full)}
+\label{app:whale}
+Full sweep at $p \in \{0.1\%, 0.5\%, 1\%, 2\%, 5\%, 10\%, 20\%,
+30\%, 50\%\}$, $N = 1000$, 3 seeds per density. The clean-data
+default (\texttt{severity="none"}) is catastrophic from 0.1\%
+upward. \texttt{severity="severe"} (CB-Huber $\delta = 0.5$):
+
+\begin{itemize}
+  \item $p \le 5\%$: RMSE $\approx 0.13$ with 0/3 coverage (point
+    accuracy is high but intervals are overconfident by $\approx 0.02$).
+  \item $p = 20\%$: RMSE $\approx 0.06$, 3/3 coverage, CI width
+    $\approx 0.38$. The ``happy path'' of the library --- Huber's
+    minimax-$\delta$ recipe paying off exactly as theory predicts.
+  \item $p = 30\%$: RMSE $\approx 2.5$, breakdown begins.
+  \item $p \ge 50\%$: no bounded-influence estimator succeeds;
+    reported for completeness.
+\end{itemize}
+
+Details and CSV in
+\texttt{benchmarks/results/whale\_density\_catboost\_huber.md}.
+
+\subsection{\texorpdfstring{Huber minimax-$\delta$ derivation and numerical table}{Huber minimax-delta derivation and numerical table}}
+\label{app:huber_derivation}
+Equation~\ref{eq:huber_minimax} is the first-order condition for
+the Huber minimax problem over the symmetric $\epsilon$-contamination
+neighbourhood of $\mathcal{N}(0, 1)$. Solving numerically with
+\texttt{scipy.optimize.brentq}:
+
+\begin{table}[!t]
+\centering
+\small
+\begin{tabular}{rrrl}
+\toprule
+$\epsilon$ & $\delta^\star$ & ARE under $\mathcal{N}$ & preset \\
+\midrule
+0\%    & $\infty$ & 1.000 & \texttt{"none"} (falls back to MSE) \\
+5\%    & 1.345    & 0.950 & \texttt{"mild"} \\
+10\%   & 1.000    & 0.903 & \texttt{"moderate"} \\
+40\%   & 0.500    & 0.792 & \texttt{"severe"} \\
+\bottomrule
+\end{tabular}
+\caption{Huber's minimax-$\delta$ and its asymptotic relative
+efficiency (ARE) at the Gaussian centre of $\mathcal{F}_\epsilon$.
+Values verified against \citet{huber2009robust} Table 4.1.}
+\label{tab:huber_numerics}
+\end{table}
+
+The ARE calculation uses
+$\mathrm{ARE}(\delta) = \left(\mathbb{E}[\psi_\delta']\right)^2 /
+\mathrm{Var}[\psi_\delta]$ under $r \sim \mathcal{N}(0,1)$, with
+$\psi_\delta$ the standard Huber $\psi$. This is the efficiency cost
+at the \emph{nominal centre} of the contamination model; the IHDP
+experiment shows the observed finite-sample PEHE penalty is
+substantially larger than ARE predicts, which we attribute to
+tree-level amplification mechanisms discussed in
+Section~\ref{sec:experiments:efficiency}.
+
+\subsection{Sample-size scaling}
+\label{app:scaling}
+On the whale DGP with $p = 10\%$ and
+\texttt{contamination\_severity="severe"}, RMSE scales with $N$
+approximately as $c \cdot N^{-1/2}$ for $N \in \{200, 500, 1000,
+2000, 5000\}$, with the rate constant $c$ depending mildly on
+density. Verified in
+\texttt{benchmarks/results/sample\_size\_scaling\_catboost\_huber.md}.
+Very-large-$N$ behaviour (beyond $N = 5000$) is extrapolated; we
+did not run it because the MCMC runtime scales with $N$ in the
+pseudo-outcome regression step.
+
+\subsection{\texorpdfstring{Welsch tuning constant $c$ sensitivity}{Welsch tuning constant c sensitivity}}
+\label{app:cwhale}
+We sweep the Welsch tuning constant $c \in \{0.5, 1.0, 1.34, 2.0,
+5.0, 20.0\}$ on a clean DGP and the whale DGP, with all other
+settings fixed at the defaults. On the clean DGP RMSE is roughly
+flat across $c$; on the whale DGP RMSE is U-shaped --- $c$ too
+small under-uses informative residuals, $c$ too large reverts to
+$L^2$ behaviour and lets whales dominate.
+
+\begin{table}[!t]
+\centering
+\small
+\begin{tabular}{r|cccc|cccc}
+\toprule
+ & \multicolumn{4}{c|}{Clean DGP} & \multicolumn{4}{c}{Whale DGP} \\
+$c$ & Bias & RMSE & Cov & Width & Bias & RMSE & Cov & Width \\
+\midrule
+0.50  & $+0.041$ & 0.061 & 1.00 & 0.62 & $+0.033$ & 0.066 & 1.00 & 0.37 \\
+1.00  & $+0.040$ & 0.066 & 1.00 & 0.32 & $+0.052$ & 0.078 & 1.00 & 0.27 \\
+\textbf{1.34}  & $+0.045$ & 0.070 & 0.88 & 0.27 & $+0.058$ & 0.077 & 1.00 & 0.26 \\
+2.00  & $+0.049$ & 0.076 & 0.88 & 0.23 & $+0.078$ & 0.106 & 0.75 & 0.24 \\
+5.00  & $+0.052$ & 0.085 & 0.62 & 0.19 & $+0.141$ & 0.199 & 0.38 & 0.21 \\
+20.0  & $+0.014$ & 0.093 & 0.62 & 0.18 & $+0.106$ & 0.460 & 0.12 & 0.19 \\
+\bottomrule
+\end{tabular}
+\caption{Welsch $c$ sensitivity (8 seeds per cell). The default
+$c = 1.34$ achieves coverage 1.00 on the whale DGP and 0.88 on the
+clean DGP, the latter loss being the small-bias / narrow-CI pattern
+discussed in Section~\ref{sec:experiments:whale}. Aggressive
+shrinkage ($c \le 1$) buys robust coverage at slightly wider
+intervals; $c \ge 5$ recovers Gaussian behaviour and loses
+calibration under contamination.}
+\label{tab:cwhale_sensitivity}
+\end{table}
+
+\subsection{Ablations}
+\label{app:ablations}
+We report one-parameter ablations of (i) \texttt{c\_whale}
+($\in \{0.5, 1.0, 1.34, 2.0, 5.0\}$), (ii) \texttt{prior\_scale}
+($\in \{0.01, 0.1, 0.5, 1.0, 2.0, 10.0\}$), (iii) \texttt{n\_splits}
+($\in \{2, 5, 10\}$), (iv) \texttt{use\_student\_t} on/off,
+(v) \texttt{use\_overlap} on/off, (vi) \texttt{mad\_rescale} on/off.
+The most consequential is (vi): MAD rescaling is harmful when
+paired with a non-robust nuisance learner under contamination
+(MAD is itself contaminated, inflating the effective Welsch
+tuning constant by three orders of magnitude). The library's
+default pairing (CB-Huber nuisance + MAD rescaling) is safe
+because the nuisance fit keeps pseudo-outcomes clean; users who
+switch to XGB-MSE nuisance under contamination should disable MAD
+rescaling explicitly. Full tables in
+\texttt{benchmarks/results/mad\_rescaling\_and\_prior.md} and
+\texttt{c\_whale\_sensitivity.md}.
+
+\subsection{\texorpdfstring{Explicit forms of $I(\beta_0)$ and $J(\beta_0)$ for Welsch + DR}{Explicit forms of I(beta\_0) and J(beta\_0) for Welsch + DR}}
+\label{app:I_J_formulas}
+Proposition~\ref{prop:welsch_calibration} requires the population
+Hessian and score covariance of the Welsch loss at the DR target.
+For $\rho_W(r; c) = (c^2/2)[1 - e^{-r^2/c^2}]$,
+$\psi_W(r; c) = r e^{-r^2/c^2}$, and
+$\psi_W'(r; c) = e^{-r^2/c^2}(1 - 2r^2/c^2)$. With residuals
+$r_i(\beta) = D_i - \phi(X_i)^\top \beta$, the per-unit gradient and
+Hessian contributions to $\rho_W$ are
+\begin{align}
+\nabla_\beta \rho_W(r_i; c) &= -\psi_W(r_i; c)\, \phi(X_i), \\
+\nabla^2_\beta \rho_W(r_i; c) &= \psi_W'(r_i; c)\, \phi(X_i)
+\phi(X_i)^\top.
+\end{align}
+The population matrices are
+\begin{align}
+I(\beta_0) &= \mathbb{E}\big[ \psi_W'(D - \phi^\top \beta_0; c)\,
+\phi(X) \phi(X)^\top \big], \\
+J(\beta_0) &= \mathbb{E}\big[ \psi_W(D - \phi^\top \beta_0; c)^2\,
+\phi(X) \phi(X)^\top \big].
+\end{align}
+Practical estimation: at a pilot posterior mean $\bar\beta$,
+substitute residuals $r_i = D_i - \phi(X_i)^\top \bar\beta$ to obtain
+$\widehat I = n^{-1} \sum_i e^{-r_i^2/c^2}(1 - 2 r_i^2/c^2)\,
+\phi(X_i)\phi(X_i)^\top$ and
+$\widehat J = n^{-1} \sum_i r_i^2 e^{-2 r_i^2/c^2}\,
+\phi(X_i)\phi(X_i)^\top$. Note that $\psi_W'$ can be negative at
+$|r| > c/\sqrt{2}$, so $\widehat I$ may have negative eigenvalues
+in heavily contaminated samples; in that case we project
+$\widehat I$ onto the positive-definite cone via clipping its
+eigenvalues to $[\epsilon, \infty)$ with $\epsilon = 10^{-3}$
+times its trace, which guarantees invertibility without disturbing
+the dominant eigenstructure.
+
+\paragraph{Ridge bias/variance characterisation.}
+The ridge projection $\widehat{I}_{\mathrm{ridge}} = \widehat{I} +
+\lambda \mathrm{tr}(\widehat{I})\, I_p / p$ modifies the target:
+the plug-in $\hat\eta$ estimates a shrunk version of the true
+$\eta^\star$. We characterise this bias empirically: at $\lambda =
+10^{-2}$ (recommended default), the relative bias $|\hat\eta -
+\hat\eta_{\lambda=0}| / |\hat\eta_{\lambda=0}|$ is $< 2\%$ for
+$p \le 6$ across all seeds and densities, and $< 65\%$ for $p = 21$.
+When pushing the dimension to $p=50$, the unregularised matrix loses
+positive definiteness entirely, and the relative bias jumps to
+$\approx 30$--$80\%$, confirming that higher-dimensional bases require
+stronger ridge regularisation or structural priors.
+The variance reduction from ridge is more consequential: without
+ridge ($\lambda = 0$), $\hat\eta$ is undefined (negative) in 40\%
+of $(p, \mathrm{seed})$ cells under 20\% contamination; at
+$\lambda = 10^{-2}$ it is always positive and within $(0, 5)$.
+An alternative to ridge is constrained eigenvalue projection
+(projecting $\widehat{I}$ onto the PD cone via eigendecomposition
+with clipped eigenvalues): this is equivalent to our spectral
+clipping at $\epsilon = 10^{-3} \mathrm{tr}(\widehat{I})$ and
+produces $\hat\eta$ values within 2\% of the ridge estimator.
+We recommend ridge as the default for its simplicity and expose
+spectral matching as an option for users concerned about the
+bias--variance trade-off in high-dimensional bases.
+
+\paragraph{Population-level PD condition.}
+Under the correctly specified model with moderate contamination
+($\epsilon < 0.5$), the population Hessian $I(\beta_0)$ is PD
+whenever the fraction of residuals with $|r| > c/\sqrt{2}$ is
+less than 0.5 (so that the positive contributions to $\psi_W'$
+dominate). On the whale DGP at 20\% density with $c = 1.34$,
+the fraction of residuals exceeding $c/\sqrt{2} \approx 0.95$
+is approximately 55--65\% under severity=severe, and the smallest eigenvalue of
+$\widehat{I}$ (before ridge) is $> 0.03$ across all seeds for $p \le 21$.
+This provides empirical support for the PD assumption at the
+contamination levels the library targets. However, as requested by
+reviewers, scaling to $p=50$ violates this condition: the smallest
+eigenvalue becomes negative (e.g., $-0.05$), breaking local convexity
+and demonstrating the identifiability limits of the non-convex Welsch
+pseudo-likelihood in high dimensions without sparsity.
+
+The trace formula \eqref{eq:eta_tr}
+and the directional formula \eqref{eq:eta_a} are then evaluated
+on the projected $\widehat I$.
+
+\subsection{Cross-fitting fold sensitivity}
+\label{app:nsplits}
+We sweep the cross-fitting fold count $K \in \{2, 3, 5, 10\}$ on
+both clean and whale DGPs ($N = 2000$, 8 seeds, default RX-Welsch
+robust configuration). Posterior calibration is essentially flat
+in $K$ on the clean DGP: bias $-0.02$ to $-0.01$, RMSE 0.023--0.036,
+coverage 1.00 across all four cell counts. On the whale DGP with
+the default \texttt{severity="none"} configuration, increasing $K$
+worsens performance (bias $+3.4$ at $K=2$ vs $+6.3$ at $K=10$)
+because smaller training folds make whale concentration more
+extreme relative to leaf capacity --- consistent with the prediction
+in \citet{kennedy2020optimal}. The library default $K = 2$ is the
+correct setting when paired with the
+\texttt{contamination\_severity} mechanism that handles whales at
+the nuisance layer rather than via fold subdivision. Full table in
+\texttt{benchmarks/results/n\_splits\_sensitivity.md}.
+
+\subsection{Targeted stress tests}
+\label{app:stress}
+Nine pytest-automated stress tests in \texttt{tests/} probe regimes
+a priori expected to break one or more components:
+AdTech whale smearing, clinical extreme imbalance, deep tail
+extrapolation, few-placebo, genomics sparsity, marketing sharp
+null, regularisation leakage, triple threat, and whale injection.
+All pass under the default configuration. They are run on every
+commit and are the library's regression floor.

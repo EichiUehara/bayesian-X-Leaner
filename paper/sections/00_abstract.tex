@@ -1,0 +1,39 @@
+\begin{abstract}
+Conditional Average Treatment Effect (CATE) estimation in practice
+demands three properties simultaneously: heterogeneous effects
+$\tau(x)$, calibrated uncertainty over them, and robustness to the
+heavy tails that contaminate real outcome data. Meta-learners
+\citep{kunzel2019metalearners} give (i); causal forests and BART
+give (i)--(ii) with Gaussian-tail assumptions; no widely used tool
+gives all three. We present \emph{Bayesian X-Learner}, an X-Learner
+built on cross-fitted doubly robust pseudo-outcomes
+\citep{kennedy2020optimal} with a full MCMC posterior over $\tau(x)$
+via a Welsch redescending pseudo-likelihood. On Hill's IHDP benchmark
+the default configuration attains mean $\PEHE = 0.56$ on 5
+replications (lowest mean; differences from S-/T-/X-learners,
+full-config Causal BART, and a causal forest baseline are not
+significant at $\alpha = 0.05$, and rank ordering is unstable at
+10 replications --- IHDP comparisons are competitive rather than
+dominant). On contaminated ``whale'' DGPs
+with up to 20--25\% tail density, a one-flag extension
+(\texttt{contamination\_severity}) that selects a Huber-$\delta$
+nuisance loss per Huber's minimax-$\delta$ relation recovers
+RMSE\,$\approx$\,0.13 with tight credible intervals (single-cross-fit
+30-seed coverage 83\% [Wilson 66\%, 93\%] at 20\% density;
+modular-Bayes pooling with Bayesian-bootstrap nuisance draws restores
+nominal 95\% coverage). We validate on the Hillstrom
+email-marketing RCT ($N = 42{,}613$), demonstrating consistent
+behaviour on real heavy-tailed outcome data, and report
+covariate-stratified $\tau(x)$ coverage across covariate quintiles
+to substantiate calibration for heterogeneous effects beyond scalar
+summaries. We draw a clean
+distinction between \emph{tails-as-contamination} (handled by
+Welsch + Huber nuisance) and \emph{tails-as-signal} (handled by a
+tail-aware CATE basis); an empirical probe confirms a tail-aware
+basis recovers $\tau_{\text{tail}}$ with full subgroup coverage,
+while the library's Hill-estimator path is contamination-directed and
+should not be used for heterogeneous $\tau$. We map six empirical
+boundaries (contamination ceiling, clean-data efficiency cost, basis
+sensitivity, sample size, treatment type, compute) and show where
+other tools are preferable. Code and reproducible benchmarks are released.
+\end{abstract}

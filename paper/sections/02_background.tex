@@ -1,0 +1,84 @@
+\section{Background and Landscape}
+\label{sec:background}
+
+\subsection{Position in the ML/AI landscape}
+Causal machine learning has moved from a statistical speciality to a
+first-class ML subfield. Uplift modelling in recommender systems
+\citep{wager2018estimation}, clinical decision support, and policy
+optimisation all require CATE estimators that produce
+\emph{heterogeneous} effects rather than a single average. What
+purely predictive ML leaves on the table is calibrated uncertainty
+on those effects: a point estimate of ``treatment lifts
+outcome by 3 units in subgroup $A$'' is actionable only if we know
+whether the confidence band crosses zero and whether the band itself
+is trustworthy. Bayesian posteriors over $\tx$ supply exactly this
+object --- they support downstream operations (integration,
+propagation, decision rules) that point-and-bootstrap does not ---
+but they are currently available only under Gaussian-tail
+assumptions. Our work targets the intersection: calibrated Bayesian
+$\tx$ posteriors under heavy-tailed outcome data.
+
+\subsection{Use cases}
+Four grounded applications drive the library's design:
+
+\begin{itemize}
+  \item \textbf{Clinical trials with rare severe outcomes.} Mortality
+    events, adverse drug reactions, and rare efficacy spikes produce
+    heavy-tailed outcome distributions. A robust posterior supports
+    go/no-go decisions where bootstrap confidence intervals --- which
+    inherit the resampled distribution's tail sensitivity --- are
+    insufficient.
+  \item \textbf{Marketing uplift with revenue whales.} Long-tailed
+    customer value distributions are the norm, not the exception.
+    Recovering both $\tau$ and calibrated uncertainty under whale
+    contamination is what neither causal forests nor TMLE provide
+    together.
+  \item \textbf{Policy evaluation with structured $\tx$ hypotheses.}
+    When prior knowledge suggests $\tau$ depends on specific
+    features (age, dose, covariate interaction), a user-supplied
+    basis $\phi(x)$ encodes the hypothesis directly and returns a
+    posterior over interpretable coefficients, not an opaque
+    regression surface.
+  \item \textbf{Research contexts where the full posterior matters.}
+    Integrating over $\tx$ to compute $P(\tx > \text{threshold})$,
+    comparing posteriors across populations, or propagating
+    uncertainty into downstream cost-benefit calculations. Point
+    estimates plus bootstrap give the first; a Bayesian posterior
+    gives all three from a single fit.
+\end{itemize}
+
+\subsection{Problems with the current landscape}
+
+\begin{table}[!t]
+\centering
+\begin{tabular}{lccc}
+\toprule
+Tool & Heterogeneous $\tx$ & Calibrated uncertainty & Handles real tails \\
+\midrule
+Classical S/T/X-Learner     & \checkmark & $\times$ & $\times$ \\
+EconML Causal Forest         & \checkmark & bootstrap & $\times$ \\
+Causal BART                  & \checkmark & Bayesian & Gaussian only \\
+TMLE / DML                    & partial    & frequentist & $\times$ \\
+\textbf{Bayesian X-Learner}  & \checkmark & \checkmark (MCMC) & \checkmark (Welsch) \\
+\bottomrule
+\end{tabular}
+\caption{Tool coverage across the three properties practitioners need.
+Only the last row covers all three.}
+\label{tab:landscape}
+\end{table}
+
+Classical meta-learners \citep{kunzel2019metalearners} provide
+heterogeneous $\tx$ but produce point estimates without uncertainty
+quantification. Causal forests \citep{wager2018estimation} add
+bootstrap confidence intervals whose coverage on heavy-tailed outcome
+distributions has not been systematically validated. Causal BART
+\citep{hill2011bayesian} and BCF \citep{hahn2020bcf} produce genuine
+Bayesian posteriors via Gaussian-process-inspired tree priors, but
+the likelihood is Gaussian: a single whale distorts the posterior
+through its squared residual. TMLE and double machine learning
+\citep[DML,][]{nie2021quasi} yield calibrated frequentist intervals
+for the average effect, with CATE extensions that remain an active
+research area; neither provides a Bayesian object for downstream
+decision-making under tails. The last row is the position this paper
+occupies: calibrated MCMC posteriors over $\tx$ with a redescending
+pseudo-likelihood that tolerates real-world outcome tails.

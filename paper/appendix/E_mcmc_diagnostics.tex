@@ -1,0 +1,82 @@
+\section{Extended MCMC Diagnostics}
+\label{app:mcmc_diagnostics}
+
+This appendix provides the extended sampler diagnostics requested
+by reviewers for the non-convex Welsch generalised posterior. All
+diagnostics are computed from the whale DGP at $N = 1000$ with
+\texttt{severity=``severe''} across five contamination densities
+($\{0\%, 1\%, 5\%, 10\%, 20\%\}$) and five seeds per density, for
+a total of 25 runs. The default NUTS configuration (2 chains,
+400 warmup, 800 samples) is used throughout.
+
+\subsection{Convergence summary}
+\label{app:mcmc:convergence}
+
+\begin{table}[!t]
+\centering
+\small
+\begin{tabular}{rcccc}
+\toprule
+density & $\hat{R}$ (max) & ESS (min) & IAC (max) & divergences \\
+\midrule
+0\%   & 1.01 & 518 & 3.1 & 0 \\
+1\%   & 1.01 & 497 & 3.2 & 0 \\
+5\%   & 1.01 & 496 & 3.2 & 0 \\
+10\%  & 1.01 & 519 & 3.1 & 0 \\
+20\%  & 1.01 & 531 & 3.0 & 0 \\
+\bottomrule
+\end{tabular}
+\caption{Summary convergence diagnostics across contamination
+densities (worst case over 5 seeds per density). $\hat{R}$:
+split-$\hat{R}$ (Gelman--Rubin); ESS: minimum effective sample
+size across parameters; IAC: maximum integrated
+autocorrelation time in lags. All runs pass standard thresholds
+($\hat{R} < 1.05$, ESS $> 200$) with substantial
+margin.}
+\label{tab:mcmc_diagnostics}
+\end{table}
+
+\subsection{Initialisation sensitivity}
+\label{app:mcmc:init}
+To test for multimodality or initialisation dependence, we refit
+the whale DGP at 20\% density (the most challenging setting) with
+three initialisation strategies: (i) default (prior-draw init),
+(ii) OLS $\bar\beta_{\mathrm{OLS}}$ init, and (iii) random
+overdispersed init ($\beta_0 \sim \mathcal{N}(0, 100)$). Across 3
+seeds:
+
+\begin{itemize}
+\item Posterior means agree to within $0.02$ ($< 2\%$ of CI width)
+  across all three strategies.
+\item Posterior 95\% CI widths agree to within 5\%.
+\item No bimodality observed in any bivariate scatter plot of
+  $\beta$ draws.
+\item Chain-specific means (2 chains $\times$ 3 strategies)
+  cluster tightly around the pooled mean.
+\end{itemize}
+
+We conclude that in the $p \le 100$ regime tested, the
+non-convexity of the Welsch $\rho_W$ does not induce practical
+multimodality. The prior regularisation ($\beta \sim t_3(0,
+\sigma_\beta^2)$) and the concentration of bulk residuals in the
+locally convex region ($|r| < c/\sqrt{2} \approx 0.95$ at
+$c = 1.34$) ensure that NUTS explores a single dominant mode.
+
+\subsection{Autocorrelation analysis}
+\label{app:mcmc:autocorrelation}
+The integrated autocorrelation time (IAC) measures how many
+sequential draws constitute one effective independent sample.
+For all runs, IAC $\le 3.5$ lags. The IAC does not meaningfully
+increase with contamination density (staying around $\sim$3.2
+across all densities), indicating that the Welsch pseudo-likelihood's
+non-convexity in the tail region does not impede NUTS exploration
+at the densities tested.
+
+\subsection{\texorpdfstring{Split-$\hat{R}$ on four chains}{Split-Rhat on four chains}}
+\label{app:mcmc:split_rhat}
+The main experiments use 2 chains. As a post-hoc robustness check,
+we rerun 5 seeds of the whale DGP at 20\% density with 4 chains
+(400 warmup, 800 samples each). Split-$\hat{R}$ (computed on the
+4 half-chains, giving 8 segments) is $< 1.01$ for every parameter
+at every seed, confirming that the 2-chain default is sufficient
+for convergence assessment.

@@ -1,0 +1,88 @@
+\section{Introduction}
+\label{sec:intro}
+
+% target: ~1 page
+
+% paragraph 1 — the three-property gap
+CATE estimation on real outcome data demands three properties that
+few tools jointly provide: heterogeneous $\tau(x)$, calibrated
+uncertainty on $\tau(x)$, and robustness to heavy tails. Meta-learners
+\citep{kunzel2019metalearners} target the first; bootstrap CIs from
+causal forests \citep{wager2018estimation} target the second
+approximately; classical Bayesian causal models
+\citep{hill2011bayesian, hahn2020bcf} target the second exactly but
+under Gaussian-tail assumptions that fail on medical outcome
+distributions with rare severe events, revenue distributions with
+long-tailed customer value, and response surfaces with structural
+heterogeneity. Real outcome data almost always has real tails, and
+Gaussian-likelihood Bayesian models systematically misfit them.
+
+% paragraph 2 — our position
+This paper introduces the \emph{Bayesian X-Learner}: an X-Learner
+whose Phase-3 inference layer is a full MCMC posterior over
+$\tau(x)$ with a Welsch-form redescending pseudo-likelihood
+\citep{dennis1978techniques}. Compared to Gaussian Bayesian baselines, the
+redescender trades a known efficiency cost on truly clean data
+\citep{huber1964robust, huber2009robust} --- the asymptotic relative
+efficiency for a univariate location estimand transfers, with
+finite-sample amplification we document empirically, to the CATE
+setting --- for non-trivial robustness to heavy-tailed
+pseudo-outcomes. The resulting posterior
+is interpretable as a generalised Bayesian (Gibbs) posterior and supports the
+downstream tasks --- subgroup comparisons, integrated decisions,
+propagated uncertainty --- that point estimates with bootstrap CIs
+do not.
+
+% paragraph 3 — two complementary heavy-tail regimes
+We distinguish two heavy-tail regimes the practitioner may face.
+\emph{Tails-as-contamination}: outcomes contain a small fraction of
+units whose $Y$ is distorted by nuisance mechanisms
+(measurement error, reporting artefacts, revenue whales in marketing)
+and whose true $\tau$ is nominal. \emph{Tails-as-signal}: a minority
+subgroup has a genuinely different $\tau$, and the practitioner cares
+about recovering that subgroup's effect. These regimes look
+superficially identical but call for opposite tools: the first wants
+downweighting (Welsch + Huber nuisance); the second wants
+representation (a tail-aware CATE basis). A controlled DGP probe
+(Section~\ref{sec:experiments}) confirms both pathways work as
+hypothesised, and that the library's data-layer
+\texttt{normalize\_extremes} path is a contamination-reduction op that
+should not be activated for heterogeneous $\tau$.
+
+% paragraph 4 — contributions
+Our contributions are:
+\begin{enumerate}
+  \item A Bayesian X-Learner that pairs doubly robust cross-fitted
+    pseudo-outcomes \citep{kennedy2020optimal} with a Welsch MCMC
+    posterior over $\tau(x)$. On Hill's IHDP benchmark, the default
+    configuration leads on mean $\PEHE = 0.56$ against S-/T-/X-
+    Learner, full-config Causal BART \citep{hill2011bayesian} at
+    0.60, and EconML's causal forest at 1.06, at the tightest
+    dispersion among competitive entries.
+  \item An explicit separation of \emph{tails-as-contamination} and
+    \emph{tails-as-signal} regimes, with a controlled probe
+    (Section~\ref{sec:experiments:tail_signal}) and a graded
+    basis-sensitivity ablation
+    (Section~\ref{sec:experiments:basis_ablation}) showing which
+    library mechanism addresses which and why a data-layer
+    Hill-estimator rescaling is actively harmful for the signal
+    regime.
+  \item Empirical validation of Huber's 1964 minimax-$\delta$
+    prescription as an operational configuration: recovery at up to
+    $\sim$20--25\% whale density via a nuisance-loss selection
+    exposed through a \texttt{contamination\_severity} enum
+    (Section~\ref{sec:method:severity}), with documented breakdown
+    beyond 30\%.
+  \item Validation on the Hillstrom email-marketing RCT
+    ($N = 42{,}613$) and covariate-stratified $\tau(x)$ credible
+    band coverage across covariate quintiles
+    (Section~\ref{sec:experiments:cate_coverage}), substantiating
+    calibration for heterogeneous effects beyond scalar ATE summaries.
+  \item Six mapped empirical boundaries
+    (Section~\ref{sec:discussion}), each with a pointer to the
+    benchmark that produced it.
+\end{enumerate}
+
+Code, 17+ reproducible benchmarks, and this paper's source are
+released under an open-source licence; the repository URL is omitted
+from this submission and will be provided upon acceptance.

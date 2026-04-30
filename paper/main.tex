@@ -1,0 +1,57 @@
+\documentclass{article}
+% arXiv preprint: visible authors, no "Under review" header. For TMLR
+% submission switch to \usepackage{tmlr} (anonymous default).
+\usepackage[preprint]{tmlr}
+% For TMLR camera-ready: \usepackage[accepted]{tmlr}
+% For explicitly anonymous TMLR submission: \usepackage[anon]{tmlr}
+
+\usepackage{booktabs}
+\usepackage{amsmath, amssymb}
+\usepackage{amsthm}
+\usepackage[shortlabels]{enumitem}
+\newtheorem{proposition}{Proposition}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{subcaption}
+
+\newcommand{\PEHE}{\sqrt{\varepsilon_{\mathrm{PEHE}}}}
+\newcommand{\eATE}{\varepsilon_{\mathrm{ATE}}}
+\newcommand{\tx}{\tau(x)}
+\newcommand{\tauhat}{\hat{\tau}}
+\newcommand{\TODO}[1]{\textcolor{red}{[TODO: #1]}}
+% Wilson 95% CI for a binomial proportion k/n (rendered as helper text).
+\newcommand{\wilson}[2]{\,[\text{Wilson 95\%~CI for}~#1/#2]}
+
+\title{Bayesian X-Learner: Calibrated Posterior Inference for \\
+  Heterogeneous Treatment Effects under Heavy-Tailed Outcomes}
+
+\author{%
+  \name Eichi Uehara \email eichi.uehara@aflo.one \\
+  \addr Independent researcher
+}
+
+\begin{document}
+\maketitle
+
+\input{sections/00_abstract}
+\input{sections/01_introduction}
+\input{sections/02_background}
+\input{sections/03_related_work}
+\input{sections/04_method}
+\input{sections/05_experiments}
+\input{sections/06_discussion}
+\input{sections/07_conclusion}
+
+\bibliography{refs}
+\bibliographystyle{tmlr}
+
+\appendix
+\input{appendix/A_figures}
+\input{appendix/B_experiments_extended}
+\input{appendix/C_evt_path}
+\input{appendix/D_discussion_extended}
+\input{appendix/E_mcmc_diagnostics}
+\input{appendix/F_qa}
+
+\end{document}

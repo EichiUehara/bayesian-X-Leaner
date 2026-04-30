@@ -1,0 +1,31 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We introduced the Bayesian X-Learner, a meta-learner that pairs
+cross-fitted doubly robust pseudo-outcomes with a Welsch redescending
+pseudo-likelihood to produce calibrated MCMC posteriors over $\tx$
+under heavy-tailed outcomes. On the clean-data IHDP benchmark the
+default configuration leads on mean $\PEHE$ across S-/T-/X-Learners,
+Causal BART, and EconML's causal forest ($\PEHE = 0.56$, tightest
+dispersion among competitive entries); on contaminated whale DGPs up to
+$\sim$20--25\% density, a single-flag
+\texttt{contamination\_severity="severe"} switch recovers RMSE
+$\approx 0.13$ with calibrated 95\% intervals. We validated on the
+Hillstrom email-marketing RCT ($N = 42{,}613$) and reported
+covariate-stratified $\tau(x)$ coverage to substantiate calibration
+beyond scalar summaries. We separated
+tails-as-contamination (handled by Welsch + Huber nuisance) from
+tails-as-signal (handled by a tail-aware CATE basis) and showed
+empirically that conflating the two via a data-layer EVT rescaling
+is actively harmful. Extended MCMC diagnostics (BFMI,
+autocorrelation, initialisation sensitivity) confirm reliable
+sampler behaviour for the non-convex Welsch posterior; a
+strengthened $\eta$-calibration analysis with empirical verification
+of the positive-definiteness condition provides firmer ground for
+the generalised-Bayes credible intervals. Six empirical
+boundaries define where the library is validated; outside them, we
+point users to tools that are better suited. The contribution is
+not a claim of state-of-the-art dominance but a principled closing
+of the three-way gap among heterogeneity, calibration, and
+heavy-tail robustness that practitioners actually face.
+

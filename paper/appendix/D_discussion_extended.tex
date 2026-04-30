@@ -1,0 +1,86 @@
+\section{Extended Discussion}
+\label{app:discussion}
+
+\subsection{Three pillars of empirical support}
+\label{app:discussion:pillars}
+The claims in this paper rest on three independent forms of
+evidence, deliberately designed to expose disagreement.
+
+\textbf{Theory.} Huber's 1964 asymptotic relative efficiency and the
+minimax-$\delta$ relation (Eq.~\ref{eq:huber_minimax}) are theorems,
+numerically verified against \citet{huber2009robust} Table 4.1
+(Appendix~\ref{app:huber_derivation}). The efficiency-robustness
+tradeoff is derivable in closed form at the location-model level;
+the IHDP finite-sample result amplifies but does not invalidate it.
+
+\textbf{Synthetic stress tests.} The 17+ benchmarks referenced in
+Appendix~\ref{app:experiments} probe each architectural axis
+independently: contamination density, sample-size scaling, overlap,
+nuisance-model choice, $\tx$ basis, prior sensitivity. They are
+designed to \emph{falsify} as well as confirm; the
+\texttt{normalize\_extremes} result
+(Section~\ref{sec:experiments:tail_signal}) is a direct falsification
+outcome.
+
+\textbf{External benchmark.} IHDP \citep{hill2011bayesian} is the
+field's standard clean-data CATE benchmark. We did not design it, we
+did not tune to it, and the result reported in
+Section~\ref{sec:experiments:ihdp} is the first number the library
+produced on the first replication without iterative adjustment.
+
+When the three agree, the claim enters the headline tables. When
+they disagree, the disagreement itself becomes a finding: the
+theory-predicted $\approx 5\%$ ARE cost at $\delta = 1.345$ vs the
+observed $2.2 \times$ PEHE penalty on IHDP is exactly this kind of
+disagreement, and it motivated the ``structural, not tunable''
+framing of Section~\ref{sec:experiments:efficiency}.
+
+\subsection{Crosswalk to repository documentation}
+\label{app:discussion:crosswalk}
+The library's internal \texttt{EXTENSIONS.md} predates this
+paper and contains per-experiment write-ups at higher resolution
+than the paper's page budget permits. For reviewer convenience:
+
+\begin{itemize}
+  \item Section~\ref{sec:experiments:ihdp} $\leftrightarrow$
+    \texttt{EXTENSIONS.md} \S17 (IHDP audit of Huber default)
+  \item Section~\ref{sec:experiments:whale} $\leftrightarrow$
+    \texttt{EXTENSIONS.md} \S16 (CatBoost-Huber recovers whale)
+  \item Section~\ref{sec:experiments:efficiency} $\leftrightarrow$
+    \texttt{EXTENSIONS.md} \S17.1--17.4 (theory and mechanism)
+  \item Section~\ref{sec:experiments:tail_signal} $\leftrightarrow$
+    \texttt{benchmarks/results/tail\_heterogeneous\_cate.md}
+    (this paper's new experiment).
+\end{itemize}
+
+All raw CSVs referenced by these markdown files ship with the
+code release.
+
+\subsection{A posteriori reflections on scope}
+\label{app:discussion:scope}
+Three reviewer concerns we anticipate.
+
+\textbf{``Why not binary classification outcomes?''} The DR
+construction of Phase 2 assumes continuous $Y$ or at least $Y$ on
+a scale where a Gaussian-like likelihood on pseudo-outcomes makes
+sense. Probit or logistic link functions can be retrofitted but
+require a re-derivation of the Welsch pseudo-loss; we scoped this
+out and flag it in the future-work direction on continuous
+treatments (Section~\ref{sec:discussion}), which shares the same
+link-function structure.
+
+\textbf{``Why not deep-learning nuisance fits?''} We ran
+\texttt{MLPRegressor} and \texttt{TabTransformer}-style backbones
+as part of the ablation suite (not reported in the main text for
+space) and found no PEHE improvement over XGBoost or CatBoost on
+tabular CATE data in the $N \le 5000$ regime tested. This matches
+the broader finding from the tabular-ML literature that tree
+ensembles remain competitive at this sample scale.
+
+\textbf{``Why not a fully nonparametric $\tau(x)$?''} A GP prior
+over $\tau$ is compatible with our architecture and is a natural
+extension; we deliberately chose a parameterised basis to enable
+interpretable subgroup contrasts and inequality probabilities.
+Users who want a nonparametric $\tau$ surface can swap the basis
+for a random-feature or Nyström approximation; we did not
+experiment with this for the current paper.

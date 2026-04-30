@@ -1,0 +1,211 @@
+\section{Anticipated Questions and Answers}
+\label{app:qa}
+
+This appendix consolidates the substantive technical questions a
+careful reader might raise about the method, organised by topic.
+Cross-references in answers point to the section, table, or figure
+where the empirical evidence lives.
+
+\subsection{Theoretical foundations}
+
+\textbf{Q1: Is the Welsch posterior a proper Bayesian posterior?}
+No. It is a generalised (Gibbs) posterior obtained by replacing the
+log-likelihood with a robust pseudo-loss; we follow
+\citet{bissiri2016general} for the construction and
+\citet{lyddon2019general} for the calibration. We use this terminology
+consistently (§\ref{sec:method:phase3}, Proposition~\ref{prop:welsch_calibration}).
+
+\textbf{Q2: Why a single scalar $\eta$ when $J \neq I$?}
+A scalar $\eta$ matches all directions only when $J \propto I$
+(Bartlett identity). When it fails, no scalar $\eta$ aligns full
+covariance; we offer \emph{two} calibration scales:
+(a) per-functional $\eta^\star(a)$ (Eq.~\ref{eq:eta_a}) and (b) the
+trace-based $\eta^\star_\mathrm{tr}$ (Eq.~\ref{eq:eta_tr}). Use (a)
+when one specific contrast matters; (b) for global average
+calibration. See Proposition~\ref{prop:welsch_calibration}.
+
+\textbf{Q3: When can $I(\beta_0)$ fail to be positive definite?}
+$\psi'_W(r) = e^{-r^2/c^2}(1 - 2r^2/c^2)$ is negative for $|r| > c/\sqrt{2}$.
+If a large fraction of residuals lies beyond $c/\sqrt{2}$ (heavy
+contamination + low overlap), $\widehat I$ can have indefinite
+eigenvalues. Round-12's eigenvalue probe (§\ref{sec:experiments:other_paradigms})
+confirms this empirically at $p = 50$. Mitigations: (i) ridge
+$\widehat I_{\text{ridge}} = \widehat I + \lambda \mathrm{tr}(\widehat I)/p \cdot I_p$
+with $\lambda = 0.01$, (ii) spectral eigenvalue projection,
+(iii) overlap weighting. The library emits a \texttt{UserWarning}
+when min/max $\hat\pi \notin [0.05, 0.95]$ and auto-enables overlap
+weights at $\hat\pi \notin [0.02, 0.98]$.
+
+\textbf{Q4: Is the basis-parameterised $\tau(x) = \phi(x)^\top\beta$
+restrictive?}
+Yes, deliberately. It buys interpretability and fast Bayesian
+inference. Brittleness under misspecification is documented in
+§\ref{sec:experiments:basis_ablation}; mitigations are spike-and-slab
+and BMA over thresholds (§\ref{sec:experiments:cate_coverage})
+and ridge / horseshoe / overcomplete spline (§\ref{sec:experiments:basis_ablation}).
+For settings where the basis is genuinely unknown, a nonparametric
+front-end (BART or GP head feeding a Welsch likelihood) is left as
+future work.
+
+\subsection{Likelihood choice}
+
+\textbf{Q5: Why Welsch and not Student-$t$, contaminated-normal, or
+biweight?}
+Welsch's super-exponential redescent
+($\psi_W \sim r e^{-r^2/c^2}$) is the operational lever
+(§\ref{sec:experiments:coverage}). Student-$t$ at fixed $\nu, \sigma$
+also has bounded influence but redescends only as $1/r$, accumulating
+influence from many heavy residuals; round-7 / round-8 experiments
+(§\ref{sec:experiments:coverage}) show fixed-$\sigma$ Student-$t$ also
+fails. Contaminated-normal mixtures are unbounded-influence and fail
+catastrophically (§\ref{sec:experiments:coverage}). Tukey biweight
+has finite support and is empirically comparable to Welsch
+(round-13 results in §\ref{sec:experiments:coverage}).
+
+\textbf{Q6: Does fixing $\sigma$ rescue Student-$t$?}
+No. Round-8 (§\ref{sec:experiments:coverage}) tests fixed-$\sigma$
+Student-$t$: bias $+28$ at 20\% density. Failure is in the
+\emph{redescent rate}, not just $\sigma$ inflation.
+
+\textbf{Q7: Why not $\beta$-divergence or $\gamma$-divergence end-to-end?}
+$\beta$-divergence at $\beta = 0.5$ is unbounded-influence and fails
+under contamination (§\ref{sec:experiments:other_paradigms},
+round-10). $\gamma$-divergence in stage-2 only fails because
+nuisance bias propagates (round-5). $\gamma$-divergence in
+\emph{both} stages succeeds and matches RX-Welsch
+(§\ref{sec:experiments:other_paradigms}). Our contribution is the
+calibrated Bayesian posterior, not the only way to robustify Phase 1
+and 2.
+
+\subsection{Calibration and inference}
+
+\textbf{Q8: Why doesn't trace-$\eta$ give nominal coverage at 20\%
+contamination?} Single-cross-fit single-functional $\eta_\mathrm{tr}$
+gives 83\% [Wilson 66\%, 93\%] at 20\% density — close but
+under-nominal because of a small constant bias (§\ref{sec:experiments:coverage}).
+Modular-Bayes pooling at $M = 8$ restores 100\% [Wilson 89\%, 100\%]
+(§\ref{sec:experiments:nuisance_bootstrap}). RBCI $\omega$-tuning at
+$\omega = 2$ also recovers nominal coverage at the cost of width
+(§\ref{sec:experiments:other_paradigms}). The trace formula is the
+sharper but slightly under-nominal default; both alternatives are
+exposed.
+
+\textbf{Q9: How does $\widehat\eta$ behave at higher $p$?}
+At $p = 50$, $\widehat I$ becomes indefinite on average and
+$\widehat\eta$ accumulates substantial bias
+(§\ref{sec:experiments:other_paradigms}). For $p \ge 50$ we recommend
+modular-Bayes pooling rather than trace-formula $\eta$.
+
+\textbf{Q10: Does nuisance uncertainty propagate?}
+Not in single-cross-fit posteriors. Modular-Bayes pooling
+(§\ref{sec:method:phase3}, §\ref{sec:experiments:nuisance_bootstrap})
+draws $M$ Bayesian-bootstrap nuisance fits, runs Phase-3 NUTS for
+each, and pools by concatenation or Rubin's rules. At 30 seeds and
+$M = 8$, modular pooling restores nominal ATE coverage at every
+density tested.
+
+\subsection{Practical configuration}
+
+\textbf{Q11: What \texttt{contamination\_severity} should I use?}
+\texttt{"none"} on truly clean data (Hill index $\hat\alpha > 5$),
+\texttt{"severe"} when contamination is plausible
+($\hat\alpha \le 2$), \texttt{"mild"} or \texttt{"moderate"} between.
+Auto-detection from a Hill estimator on residuals
+(§\ref{sec:experiments:auto_severity}) works at light contamination
+(5\%) but fails at heavy contamination (20\%) because the non-robust
+pre-fit is itself contaminated. Domain knowledge is the safer route.
+See §\ref{sec:discussion:flowchart} for the full configuration tree.
+
+\textbf{Q12: When should I enable \texttt{normalize\_y\_for\_nuisance}?}
+On dollar-scale or other extreme-scale outcomes. The minimax-$\delta$
+prescription assumes standardised residuals; raw-scale outcomes
+miscalibrate $\delta$. The Lalonde NSW result
+(§\ref{sec:experiments:hillstrom}) and the scale-sensitivity probe
+(§\ref{sec:discussion:scale}) confirm modest bias without
+pre-standardisation.
+
+\textbf{Q13: When do I need overlap weights?}
+When $\min \hat\pi(X) < 0.05$ or $\max \hat\pi(X) > 0.95$. The
+library auto-warns and auto-enables at $\hat\pi \notin [0.02, 0.98]$
+(round-13 fallback). Empirical validation:
+§\ref{sec:experiments:cate_coverage} shows overlap weights are
+necessary but not sufficient under combined low-overlap +
+contamination.
+
+\textbf{Q14: When do I need modular Bayes?}
+Compute the dispersion ratio $\rho = \mathrm{std}_K(\bar\beta^{(k)}) / \mathrm{mean}_K(\mathrm{CI~width}^{(k)})$
+across $K = 5$ re-cross-fits (§\ref{sec:experiments:coverage}).
+$\rho > 0.15$ indicates cross-fit instability; enable modular Bayes
+with $M = 8$. Severity=severe consistently has $\rho \le 0.12$ and
+generally does not need modular pooling at the cost of typical
+intervals.
+
+\subsection{Empirical scope}
+
+\textbf{Q15: Why is IHDP not statistically significant?}
+At 5 reps no method differs significantly from RX-Learner at
+$\alpha = 0.05$; at 10 reps the rank ordering changes and the
+abstract claim is "competitive, not dominant"
+(§\ref{sec:experiments:ihdp}). IHDP is a clean-data benchmark where
+robust methods are not expected to win.
+
+\textbf{Q16: Have you tested non-whale contamination?}
+Yes: Pareto ($\alpha = 1.5$), Student-$t_2$, Student-$t_3$,
+Student-$t_5$, asymmetric (treated-only), bimodal (sign-symmetric),
+and $\alpha$-stable (round-13). All handled by
+\texttt{severity="severe"} with bias $\le 0.13$.
+
+\textbf{Q17: Have you tested real heavy-tailed data?}
+Yes: Hillstrom RCT ($N = 42{,}613$, Hill index $\hat\alpha \approx 2$
+on positive spend, see Figure~\ref{fig:hillstrom_hill}) and Lalonde NSW
+($N = 445$, dollar-scale earnings). Hillstrom passes placebo + symmetry
++ propensity-stratified placebo + holdout (§\ref{sec:experiments:hillstrom}).
+
+\textbf{Q18: How does the method scale?}
+Single fit: $5{-}20$\,s for RX-Learner Phase 3 NUTS at $N = 1000$, $p
+\le 100$ (§\ref{sec:experiments:other_paradigms}). At $N = 10{,}000$,
+$p = 100$: $4.2$\,s, $+53$\,MB peak RSS
+(§\ref{sec:experiments:other_paradigms}). Modular-Bayes pooling
+multiplies runtime by $M \in [5, 10]$.
+
+\subsection{Comparison to alternatives}
+
+\textbf{Q19: How does the Welsch posterior compare to RBCI
+$\omega$-tuned squared-loss generalised Bayes?}
+RBCI $\omega$-tuning of squared-loss (round-13,
+§\ref{sec:experiments:coverage}) selects $\omega$ to match a
+bootstrap variance target; it gives wider intervals than Welsch +
+trace-$\eta$ at comparable coverage, with bias scaling like the
+non-robust ATE under contamination. The Welsch redescender adds
+\emph{bias control} on top of the temperature-only calibration that
+$\omega$-tuning provides.
+
+\textbf{Q20: What about Lasso-DR, Catoni-DR, sandwich-CI DR-learners?}
+Round-13 (§\ref{sec:experiments:other_paradigms}) tests all three.
+Lasso-DR (sparse linear regression on DR pseudo-outcomes) and
+Catoni-DR (heavy-tail-robust mean estimator) are unbounded-influence
+and fail just like Huber-DR under contamination. Tail-trimmed-IPW (round-7) catastrophically
+fails because trimming changes the estimand. Bounded-influence at
+the regression / likelihood layer is the operational requirement.
+
+\textbf{Q21: Why not GRF (Generalised Random Forests)?}
+GRF is a strong nonparametric CATE alternative for clean / mildly
+contaminated data. We did not run it because the reference
+implementation is in R and we kept the pipeline single-language
+(see §\ref{sec:discussion:limitations}). A multi-language reproduction
+is a natural extension.
+
+\subsection{Software and reproducibility}
+
+\textbf{Q22: Can the library detect and warn about edge cases?}
+Yes. The current implementation warns when (i) min/max $\hat\pi$ is
+outside $[0.05, 0.95]$ (small-eigenvalue risk) and (ii) auto-enables
+\texttt{use\_overlap=True} when $\hat\pi$ falls outside
+$[0.02, 0.98]$ (round-13 auto-fallback). Users can set
+\texttt{use\_overlap} explicitly to silence the fallback.
+
+\textbf{Q23: Are there regression tests?}
+Yes — \texttt{tests/test\_default\_config\_regression.py} pins the
+default configuration and the \texttt{contamination\_severity} API; 9 tests
+pass on every commit. The library is configured for deterministic
+runs given a \texttt{random\_state}.

@@ -1,0 +1,65 @@
+\section{The \texttt{normalize\_extremes} Path: An Architectural Residue}
+\label{app:evt_path}
+
+This appendix documents an architectural pathway in the library
+that the empirical results discourage: the Hill-estimator-driven
+data-layer rescaling implemented by
+\texttt{sert\_xlearner.core.orthogonalization.normalize\_extremes}.
+We describe it here because the code remains in the public library
+for reproducibility of earlier experiments; users must pass
+\texttt{tail\_threshold} and \texttt{tail\_alpha} explicitly to
+activate it, and we recommend they do not.
+
+\paragraph{What the code does.}
+\texttt{estimate\_tail\_parameters} implements a standard Hill
+estimator on residuals: for a top-percentile threshold $t$ and
+exceedances $\{|r_i| : |r_i| > t\}$, the estimator returns
+$\hat\alpha = 1 / \overline{\ln(|r_i| / t)}$, the inverse of the
+sample Pareto-tail slope. \texttt{normalize\_extremes} then
+transforms Phase 2 pseudo-outcomes as
+$D_i \mapsto D_i / t^{\hat\alpha}$ for $|D_i| > t$ and leaves bulk
+pseudo-outcomes unchanged. The intent was a tail-scale normaliser
+that would stabilise the MCMC gradient regardless of whether the
+tail carried signal or contamination.
+
+\paragraph{What empirical evaluation shows.}
+The tail-heterogeneous probe of
+Section~\ref{sec:experiments:tail_signal} activates this pathway on
+a DGP where the tail is explicitly signal: whales have
+$\tau_{\text{whale}} = 10$ while the bulk has $\tau_{\text{bulk}} = 2$.
+The \texttt{normalize\_extremes} operator divides the whale
+pseudo-outcomes by $t^\alpha$ --- which for Hill-estimated
+$(t, \hat\alpha)$ on this DGP is approximately $(5, 1.5)$, a
+division factor of $\approx 11$. The whale signal collapses to the
+bulk scale, the posterior concentrates on a near-zero effect, and
+subgroup coverage drops to zero. Across all six (basis,
+likelihood) combinations of Table~\ref{tab:tail_signal}, activating
+\texttt{normalize\_extremes} degrades both mixed and whale
+$\eATE$ and kills subgroup coverage.
+
+\paragraph{Why it fails.}
+The operator is contamination-directed by construction: scaling
+tail pseudo-outcomes \emph{down} corresponds to a Bayesian prior
+belief that tail residuals are magnified noise rather than a
+heterogeneous effect. When that belief is correct, the Welsch
+likelihood already handles the case (and handles it better,
+because Welsch's suppression is smooth rather than a hard
+threshold). When the belief is wrong, as in the tails-as-signal
+regime, the operator removes signal that would otherwise drive
+the posterior. It is, in short, the wrong architectural layer:
+tail modelling belongs in the likelihood or the prior, not as a
+deterministic data transformation.
+
+\paragraph{What a correct EVT-Bayesian likelihood would look like.}
+A principled replacement would place a mixture likelihood at the
+Phase 3 layer: a Welsch component for bulk residuals plus a
+generalised Pareto tail component with shape parameter estimated
+jointly with $\beta$. The Hill estimator would elicit an
+informative prior on the Pareto shape rather than deterministically
+rescale the data. Such a model is straightforward to implement in
+NumPyro but introduces identifiability concerns that we have not
+yet investigated at scale. We flag this as future work
+(Section~\ref{sec:discussion}); the architectural residue in the
+current library is neither silently removed nor silently
+activated, but explicitly documented here as a known-bad
+configuration.
